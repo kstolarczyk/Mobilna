@@ -16,20 +16,36 @@ namespace Core.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.8");
 
+            modelBuilder.Entity("Core.Models.GrupaObiektow", b =>
+                {
+                    b.Property<int>("GrupaObiektowId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Nazwa")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("GrupaObiektowId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GrupyObiektow");
+                });
+
             modelBuilder.Entity("Core.Models.Obiekt", b =>
                 {
                     b.Property<int>("ObiektId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("GrupaId")
+                    b.Property<int>("GrupaObiektowId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("GrupaNazwa")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("GrupaSymbol")
-                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("Latitude")
                         .HasColumnType("TEXT");
@@ -53,6 +69,8 @@ namespace Core.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ObiektId");
+
+                    b.HasIndex("GrupaObiektowId");
 
                     b.HasIndex("UserId");
 
@@ -92,6 +110,9 @@ namespace Core.Migrations
                     b.Property<string>("AkceptowalneWartosci")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("GrupaObiektowId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("JednostkaMiary")
                         .HasColumnType("TEXT");
 
@@ -105,6 +126,8 @@ namespace Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("TypParametrowId");
+
+                    b.HasIndex("GrupaObiektowId");
 
                     b.ToTable("TypyParametrow");
                 });
@@ -129,8 +152,21 @@ namespace Core.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Core.Models.GrupaObiektow", b =>
+                {
+                    b.HasOne("Core.Models.User", null)
+                        .WithMany("GrupyObiektow")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("Core.Models.Obiekt", b =>
                 {
+                    b.HasOne("Core.Models.GrupaObiektow", "GrupaObiektow")
+                        .WithMany("Obiekty")
+                        .HasForeignKey("GrupaObiektowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Core.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -151,6 +187,13 @@ namespace Core.Migrations
                         .HasForeignKey("TypParametrowId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Core.Models.TypParametrow", b =>
+                {
+                    b.HasOne("Core.Models.GrupaObiektow", null)
+                        .WithMany("TypyParametrow")
+                        .HasForeignKey("GrupaObiektowId");
                 });
 #pragma warning restore 612, 618
         }

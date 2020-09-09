@@ -14,4 +14,5 @@ namespace Core.Utility.ViewModel
             throw new System.NotImplementedException();
         }
     }
+
 }

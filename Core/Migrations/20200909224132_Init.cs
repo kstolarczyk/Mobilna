@@ -8,23 +8,6 @@ namespace Core.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "TypyParametrow",
-                columns: table => new
-                {
-                    TypParametrowId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Symbol = table.Column<string>(nullable: true),
-                    Nazwa = table.Column<string>(nullable: true),
-                    TypDanych = table.Column<string>(nullable: true),
-                    JednostkaMiary = table.Column<string>(nullable: true),
-                    AkceptowalneWartosci = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TypyParametrow", x => x.TypParametrowId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -40,6 +23,27 @@ namespace Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GrupyObiektow",
+                columns: table => new
+                {
+                    GrupaObiektowId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Nazwa = table.Column<string>(nullable: true),
+                    Symbol = table.Column<string>(nullable: true),
+                    UserId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GrupyObiektow", x => x.GrupaObiektowId);
+                    table.ForeignKey(
+                        name: "FK_GrupyObiektow_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Obiekty",
                 columns: table => new
                 {
@@ -47,9 +51,7 @@ namespace Core.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Symbol = table.Column<string>(nullable: true),
                     Nazwa = table.Column<string>(nullable: true),
-                    GrupaId = table.Column<int>(nullable: false),
-                    GrupaNazwa = table.Column<string>(nullable: true),
-                    GrupaSymbol = table.Column<string>(nullable: true),
+                    GrupaObiektowId = table.Column<int>(nullable: false),
                     Latitude = table.Column<decimal>(nullable: false),
                     Longitude = table.Column<decimal>(nullable: false),
                     Status = table.Column<int>(nullable: false),
@@ -60,11 +62,41 @@ namespace Core.Migrations
                 {
                     table.PrimaryKey("PK_Obiekty", x => x.ObiektId);
                     table.ForeignKey(
+                        name: "FK_Obiekty_GrupyObiektow_GrupaObiektowId",
+                        column: x => x.GrupaObiektowId,
+                        principalTable: "GrupyObiektow",
+                        principalColumn: "GrupaObiektowId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Obiekty_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TypyParametrow",
+                columns: table => new
+                {
+                    TypParametrowId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Symbol = table.Column<string>(nullable: true),
+                    Nazwa = table.Column<string>(nullable: true),
+                    TypDanych = table.Column<string>(nullable: true),
+                    JednostkaMiary = table.Column<string>(nullable: true),
+                    AkceptowalneWartosci = table.Column<string>(nullable: true),
+                    GrupaObiektowId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TypyParametrow", x => x.TypParametrowId);
+                    table.ForeignKey(
+                        name: "FK_TypyParametrow_GrupyObiektow_GrupaObiektowId",
+                        column: x => x.GrupaObiektowId,
+                        principalTable: "GrupyObiektow",
+                        principalColumn: "GrupaObiektowId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,6 +127,16 @@ namespace Core.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_GrupyObiektow_UserId",
+                table: "GrupyObiektow",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Obiekty_GrupaObiektowId",
+                table: "Obiekty",
+                column: "GrupaObiektowId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Obiekty_UserId",
                 table: "Obiekty",
                 column: "UserId");
@@ -108,6 +150,11 @@ namespace Core.Migrations
                 name: "IX_Parametry_TypParametrowId",
                 table: "Parametry",
                 column: "TypParametrowId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TypyParametrow_GrupaObiektowId",
+                table: "TypyParametrow",
+                column: "GrupaObiektowId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -120,6 +167,9 @@ namespace Core.Migrations
 
             migrationBuilder.DropTable(
                 name: "TypyParametrow");
+
+            migrationBuilder.DropTable(
+                name: "GrupyObiektow");
 
             migrationBuilder.DropTable(
                 name: "Users");

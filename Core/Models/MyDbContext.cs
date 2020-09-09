@@ -34,5 +34,6 @@ namespace Core.Models
         public DbSet<Parametr> Parametry { get; set; }
         public DbSet<TypParametrow> TypyParametrow { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<GrupaObiektow> GrupyObiektow { get; set; }
     }
 }
