@@ -1,6 +1,11 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
 using Android.OS;
+using AndroidX.Work;
+using Core.Services;
 using Core.ViewModels;
+using Mobilna.Workers;
+using MvvmCross;
 using MvvmCross.Platforms.Android.Views;
 
 namespace Mobilna.Views
