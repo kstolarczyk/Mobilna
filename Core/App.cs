@@ -21,7 +21,21 @@ namespace Core
             CreatableTypes().InNamespace("Core.Services").AsInterfaces().RegisterAsLazySingleton();
             Mvx.IoCProvider.RegisterType<MyDbContext>();
             RegisterAppStart<ObiektyViewModel>();
-            InitializeFirstData();
+            // InitializeFirstData();
+        }
+
+        public static async Task InitializeDatabase()
+        {
+            await using var context = new MyDbContext();
+            try
+            {
+                await context.Database.MigrateAsync();
+            }
+            catch (Exception e)
+            {
+                await context.Database.EnsureDeletedAsync();
+                await context.Database.MigrateAsync();
+            }
         }
 
         private async void InitializeFirstData()
@@ -29,18 +43,20 @@ namespace Core
             try
             {
                 await using var context = Mvx.IoCProvider.Resolve<MyDbContext>();
-                // await context.Database.EnsureDeletedAsync();
+                await context.Database.EnsureDeletedAsync();
                 await context.Database.MigrateAsync();
                 if (!context.TypyParametrow.Any()) await InsertTypyParametrow(context);
                 if (!context.GrupyObiektow.Any()) await InsertGrupyObiektow(context);
                 if (!context.Users.Any()) await InsertUsers(context);
-                if (!context.Obiekty.Any()) await InsertObiekty(context);
+                // if (!context.Obiekty.Any()) await InsertObiekty(context);
                 await context.SaveChangesAsync();
+
             }
             catch (Exception e)
             {
                 // ignored
             }
+
         }
 
         private async Task InsertUsers(MyDbContext context)

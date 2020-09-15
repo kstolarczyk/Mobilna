@@ -37,7 +37,7 @@ namespace Core.Repositories
 
         public IAsyncEnumerable<Obiekt> GetAsStream()
         {
-            return _context.Obiekty.AsAsyncEnumerable();
+            return _context.Obiekty.AsNoTracking().AsAsyncEnumerable();
         }
 
         public async Task<Obiekt> GetOneAsync(int obiektId)

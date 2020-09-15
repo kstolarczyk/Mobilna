@@ -1,4 +1,5 @@
-﻿using Core.Utility.Model;
+﻿using System.Collections.Generic;
+using Core.Utility.Model;
 using MvvmCross.ViewModels;
 
 namespace Core.Utility.ViewModel

@@ -25,10 +25,16 @@ namespace Core.Migrations
                     b.Property<string>("Nazwa")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("OstatniaAktualizacja")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Symbol")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Usunieta")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("GrupaObiektowId");
@@ -56,8 +62,11 @@ namespace Core.Migrations
                     b.Property<string>("Nazwa")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("OstatniaAktualizacja")
+                    b.Property<DateTime?>("OstatniaAktualizacja")
                         .HasColumnType("TEXT");
+
+                    b.Property<int?>("RemoteId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
@@ -65,7 +74,10 @@ namespace Core.Migrations
                     b.Property<string>("Symbol")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Usuniety")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ObiektId");
@@ -119,11 +131,17 @@ namespace Core.Migrations
                     b.Property<string>("Nazwa")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("OstatniaAktualizacja")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Symbol")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TypDanych")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("Usuniety")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("TypParametrowId");
 
@@ -169,9 +187,7 @@ namespace Core.Migrations
 
                     b.HasOne("Core.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Core.Models.Parametr", b =>

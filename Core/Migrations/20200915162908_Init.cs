@@ -30,6 +30,8 @@ namespace Core.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Nazwa = table.Column<string>(nullable: true),
                     Symbol = table.Column<string>(nullable: true),
+                    OstatniaAktualizacja = table.Column<DateTime>(nullable: true),
+                    Usunieta = table.Column<bool>(nullable: false),
                     UserId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -49,14 +51,16 @@ namespace Core.Migrations
                 {
                     ObiektId = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    RemoteId = table.Column<int>(nullable: true),
                     Symbol = table.Column<string>(nullable: true),
                     Nazwa = table.Column<string>(nullable: true),
                     GrupaObiektowId = table.Column<int>(nullable: false),
                     Latitude = table.Column<decimal>(nullable: false),
                     Longitude = table.Column<decimal>(nullable: false),
                     Status = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false),
-                    OstatniaAktualizacja = table.Column<DateTime>(nullable: false)
+                    UserId = table.Column<int>(nullable: true),
+                    OstatniaAktualizacja = table.Column<DateTime>(nullable: true),
+                    Usuniety = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,7 +76,7 @@ namespace Core.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -85,6 +89,8 @@ namespace Core.Migrations
                     Nazwa = table.Column<string>(nullable: true),
                     TypDanych = table.Column<string>(nullable: true),
                     JednostkaMiary = table.Column<string>(nullable: true),
+                    Usuniety = table.Column<bool>(nullable: false),
+                    OstatniaAktualizacja = table.Column<DateTime>(nullable: true),
                     AkceptowalneWartosci = table.Column<string>(nullable: true),
                     GrupaObiektowId = table.Column<int>(nullable: true)
                 },

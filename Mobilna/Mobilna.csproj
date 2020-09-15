@@ -73,7 +73,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SplashScreen.cs" />
     <Compile Include="Views\ObiektyView.cs" />
-    <Compile Include="Workers\DbSyncWorker.cs" />
+    <Compile Include="Workers\BaseWorker.cs" />
+    <Compile Include="Workers\GrupySyncWorker.cs" />
+    <Compile Include="Workers\ObiektySyncWorker.cs" />
+    <Compile Include="Workers\TypySyncWorker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
