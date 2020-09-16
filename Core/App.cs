@@ -15,6 +15,8 @@ namespace Core
 {
     public class App : MvxApplication
     {
+        public static Task DbInitialization { get; set; }
+        public static object Mutex = new object();
         public override void Initialize()
         {
             CreatableTypes().InNamespace("Core.Repositories").AsInterfaces().RegisterAsDynamic();
@@ -23,7 +25,7 @@ namespace Core
             RegisterAppStart<ObiektyViewModel>();
         }
 
-        public static async Task InitializeDatabase()
+        public static async Task<bool> InitializeDatabase()
         {
             await using var context = new MyDbContext();
             try
@@ -35,6 +37,16 @@ namespace Core
                 await context.Database.EnsureDeletedAsync();
                 await context.Database.MigrateAsync();
             }
+
+            if (context.Users.Any()) return true;
+            await context.Users.AddAsync(new User()
+            {
+                EncodedPassword = Convert.ToBase64String("TestPass321".Select(Convert.ToByte).ToArray()),
+                Username = "TestUser",
+                Email = "test@user.pl"
+            });
+            await context.SaveChangesAsync();
+            return true;
         }
     }
 }

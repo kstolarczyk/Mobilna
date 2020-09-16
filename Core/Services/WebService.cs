@@ -19,6 +19,7 @@ namespace Core.Services
         private readonly RestClient _client;
         private readonly object _credentials;
         public const string ApiBaseUrl = "https://77.55.217.165/EwidencjaObiektow/index.php/Api";
+        // public const string ApiBaseUrl = "http://192.168.1.118/EwidencjaObiektow/index.php/Api";
 
         public WebService(MyDbContext context)
         {
@@ -39,7 +40,7 @@ namespace Core.Services
                 {
                     credentials = _credentials, lastUpdate
                 }))
-                .Select(r => _client.GetAsync<ApiResponse<Obiekt>>(r)).ToList();
+                .Select(r => _client.PostAsync<ApiResponse<Obiekt>>(r)).ToList();
             try
             {
                 await Task.WhenAll(tasks);
@@ -60,7 +61,7 @@ namespace Core.Services
             });
             try
             {
-                var response = await _client.GetAsync<ApiResponse<GrupaObiektow>>(request);
+                var response = await _client.PostAsync<ApiResponse<GrupaObiektow>>(request);
                 return response.Data;
             }
             catch (Exception e)
@@ -77,7 +78,7 @@ namespace Core.Services
             });
             try
             {
-                var response = await _client.GetAsync<ApiResponse<TypParametrow>>(request);
+                var response = await _client.PostAsync<ApiResponse<TypParametrow>>(request);
                 return response.Data;
             }
             catch (Exception e)

@@ -8,8 +8,11 @@ namespace Mobilna.Workers
     {
         static BaseWorker()
         {
-            var initTask = App.InitializeDatabase();
-            initTask.Wait();
+            lock (App.Mutex)
+            {
+                App.DbInitialization ??= App.InitializeDatabase();
+            }
+            App.DbInitialization.Wait();
         }
 
         protected BaseWorker(Context context, WorkerParameters workerParams) : base(context, workerParams)

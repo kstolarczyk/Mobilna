@@ -5,5 +5,14 @@ namespace Core.Utility.Repository
 {
     public class BaseRepository
     {
+        static BaseRepository()
+        {
+            lock (App.Mutex)
+            {
+                App.DbInitialization ??= App.InitializeDatabase();   
+            }
+            
+            App.DbInitialization.Wait();
+        }
     }
 }
