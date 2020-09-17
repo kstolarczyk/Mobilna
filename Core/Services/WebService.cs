@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
@@ -85,6 +86,13 @@ namespace Core.Services
             {
                 return new List<TypParametrow>();
             }
+        }
+        public async Task<User> GetUserAsync(string login, string password)
+        {
+            object credentials = new { credentials = new { base64_login = Convert.ToBase64String(Encoding.UTF8.GetBytes(login)), base64_password = Convert.ToBase64String(Encoding.UTF8.GetBytes(password)) } };
+            var request = new RestRequest($"Obiekt/User").AddJsonBody(credentials);
+            var response = await _client.PostAsync<User>(request);
+            return response;
         }
     }
 
