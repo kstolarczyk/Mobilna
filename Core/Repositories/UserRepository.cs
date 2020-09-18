@@ -10,9 +10,9 @@ namespace Core.Repositories
 {
     public interface IUserRepository
     {
-        public Task<User> CheckUserAsync(string login);
         public void Insert(User user);
         public void Delete(User user);
+        public Task SaveAsync();
 
     }
     public class UserRepository : BaseRepository, IUserRepository
@@ -24,12 +24,6 @@ namespace Core.Repositories
             _context = context;
         }
 
-
-        public async Task<User> CheckUserAsync(string login)
-        {
-            return await _context.Users.FindAsync(login).ConfigureAwait(false);
-        }
-
         public void Insert(User user)
         {
             _context.Add(user);
@@ -37,6 +31,11 @@ namespace Core.Repositories
         public void Delete(User user)
         {
             _context.Remove(user);
+        }
+
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

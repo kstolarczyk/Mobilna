@@ -17,12 +17,27 @@ namespace Core
     {
         public static Task DbInitialization { get; set; }
         public static object Mutex = new object();
+        public static bool LoggedIn { get; set; }
         public override void Initialize()
         {
             CreatableTypes().InNamespace("Core.Repositories").AsInterfaces().RegisterAsDynamic();
             CreatableTypes().InNamespace("Core.Services").AsInterfaces().RegisterAsLazySingleton();
             Mvx.IoCProvider.RegisterType<MyDbContext>();
-            RegisterAppStart<ObiektyViewModel>();
+            var context = Mvx.IoCProvider.Resolve<MyDbContext>();
+            lock (Mutex)
+            {
+                DbInitialization ??= InitializeDatabase();
+            }
+            DbInitialization.Wait();
+            if (context.Users.Any())
+            {
+                LoggedIn = true;
+                RegisterAppStart<ObiektyViewModel>();
+            }
+            else
+            {
+                RegisterAppStart<LoginViewModel>();
+            }
         }
 
         public static async Task<bool> InitializeDatabase()
@@ -37,15 +52,6 @@ namespace Core
                 await context.Database.EnsureDeletedAsync();
                 await context.Database.MigrateAsync();
             }
-
-            if (context.Users.Any()) return true;
-            await context.Users.AddAsync(new User()
-            {
-                EncodedPassword = Convert.ToBase64String("TestPass321".Select(Convert.ToByte).ToArray()),
-                Username = "TestUser",
-                Email = "test@user.pl"
-            });
-            await context.SaveChangesAsync();
             return true;
         }
     }

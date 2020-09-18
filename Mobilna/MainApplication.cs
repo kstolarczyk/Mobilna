@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Runtime;
 using AndroidX.Work;
@@ -18,7 +19,7 @@ namespace Mobilna
         {
         }
 
-        public override void OnCreate()
+        public override async void OnCreate()
         {
             base.OnCreate();
             var startGrupyRequest = OneTimeWorkRequest.Builder.From<GrupySyncWorker>().SetConstraints(new Constraints()
@@ -42,7 +43,13 @@ namespace Mobilna
             }).SetInitialDelay(i, TimeUnit.Minutes).Build());
 
             var workManager = WorkManager.GetInstance(this);
+            
             workManager.CancelAllWork();
+            while (!App.LoggedIn)
+            {
+                await Task.Delay(250);
+            }
+
             workManager.BeginWith(startGrupyRequest).Then(startObiektyRequest).Enqueue();
             workManager.Enqueue(grupyRequest);
             workManager.Enqueue(obiektyRequest.ToList());

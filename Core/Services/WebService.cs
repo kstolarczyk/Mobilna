@@ -15,12 +15,16 @@ using RestSharp.Serializers.NewtonsoftJson;
 
 namespace Core.Services
 {
-    public class WebService
+    public interface IRemoteLoginService
+    {
+        Task<User> LoginAsync(string login, string password);
+    }
+    public class WebService : IRemoteLoginService
     {
         private readonly RestClient _client;
         private readonly object _credentials;
-        public const string ApiBaseUrl = "https://77.55.217.165/EwidencjaObiektow/index.php/Api";
-        // public const string ApiBaseUrl = "http://192.168.1.118/EwidencjaObiektow/index.php/Api";
+        // public const string ApiBaseUrl = "https://77.55.217.165/EwidencjaObiektow/index.php/Api";
+        public const string ApiBaseUrl = "http://192.168.1.118/EwidencjaObiektow/index.php/Api";
 
         public WebService(MyDbContext context)
         {
@@ -87,12 +91,19 @@ namespace Core.Services
                 return new List<TypParametrow>();
             }
         }
-        public async Task<User> GetUserAsync(string login, string password)
+        public async Task<User> LoginAsync(string login, string password)
         {
-            object credentials = new { credentials = new { base64_login = Convert.ToBase64String(Encoding.UTF8.GetBytes(login)), base64_password = Convert.ToBase64String(Encoding.UTF8.GetBytes(password)) } };
-            var request = new RestRequest($"Obiekt/User").AddJsonBody(credentials);
-            var response = await _client.PostAsync<User>(request);
-            return response;
+            var credentials = new { credentials = new { base64_login = Convert.ToBase64String(Encoding.UTF8.GetBytes(login)), base64_password = Convert.ToBase64String(Encoding.UTF8.GetBytes(password)) } };
+            var request = new RestRequest($"User").AddJsonBody(credentials);
+            var response = await _client.ExecutePostAsync(request);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                throw new Exception("Wrong credentials!");
+            }
+            
+            var user = JsonConvert.DeserializeObject<ApiResponse<User>>(response.Content).Data.FirstOrDefault();
+            if (user != null) user.EncodedPassword = credentials.credentials.base64_password;
+            return user;
         }
     }
 

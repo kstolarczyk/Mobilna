@@ -7,38 +7,48 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using MvvmCross.Navigation;
 
 namespace Core.ViewModels
 {
     public class LoginViewModel : BaseViewModel
     {
         private readonly IUserRepository _repository;
-        private readonly WebService _webService;
-        private readonly MyDbContext _context;
+        private readonly IRemoteLoginService _loginService;
+        private readonly IMvxNavigationService _navigationService;
         private string _login;
         private string _password;
-        public ICommand Submit { private set; get; }
 
-
-        public LoginViewModel(IUserRepository repository)
+        public LoginViewModel(IUserRepository repository, IRemoteLoginService loginService, IMvxNavigationService navigationService)
         {
             _repository = repository;
-            _context = new MyDbContext();
-
-
+            _loginService = loginService;
+            _navigationService = navigationService;
         }
-        public MvxCommand SubmitCommand
+        public IMvxAsyncCommand SubmitCommand => new MvxAsyncCommand(Login);
+
+        public async Task Login()
         {
-            get
+            try
             {
-                return new MvxCommand(() => Login());
+                var user = await _loginService.LoginAsync(LoginEdit, PasswordEdit);
+                _repository.Insert(user);
+                await _repository.SaveAsync();
+                App.LoggedIn = true;
+                await _navigationService.Navigate<ObiektyViewModel>();
             }
+            catch (Exception e)
+            {
+                LoginEdit = "chujnia";
+            }
+
         }
 
         public string LoginEdit
         {
-            get { return _login; }
+            get => _login;
             set
             {
                 _login = value;
@@ -47,25 +57,12 @@ namespace Core.ViewModels
         }
         public string PasswordEdit
         {
-            get { return _password; }
+            get => _password;
             set
             {
                 _password = value;
                 RaisePropertyChanged(() => PasswordEdit);
             }
-        }
-
-
-        public void Login()
-        {
-            if (_repository.CheckUserAsync(_login) != null) // Jeśeli user jest w bazie to:
-            {
-                // załadowanie widoku ObiektyView
-            }
-            var task = _webService.GetUserAsync(_login, _password);
-            task.Wait();
-           // User user = task.Result;
-          //  _repository.Insert(user);
         }
     }
 }
