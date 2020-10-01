@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using Core.Utility.Model;
 
 namespace Core.Models
 {
-    public class Obiekt : IEquatable<Obiekt>
+    public class Obiekt : ValidateBase, IEquatable<Obiekt>
     {
         public Obiekt()
         {
             OstatniaAktualizacja ??= DateTime.Now;
+            ZdjecieLokal ??= string.Empty;
         }
         public int ObiektId { get; set; }
         public int? RemoteId { get; set; }
@@ -19,10 +21,12 @@ namespace Core.Models
         public int Status { get; set; } // 1 - Added, 2 - Modified, 3 - Deleted, 0 - none
         public int? UserId { get; set; }
         public User User { get; set; }
+        public string Zdjecie { get; set; }
         public GrupaObiektow GrupaObiektow { get; set; }
         public DateTime? OstatniaAktualizacja { get; set; }
         public bool Usuniety { get; set; }
         public List<Parametr> Parametry { get; set; } = new List<Parametr>();
+        public string ZdjecieLokal { get; set; }
 
         public Obiekt Update(Obiekt other)
         {

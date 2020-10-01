@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Core.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20200915162908_Init")]
+    [Migration("20201001081621_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -81,6 +81,12 @@ namespace Core.Migrations
 
                     b.Property<bool>("Usuniety")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Zdjecie")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ZdjecieLokal")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("ObiektId");
 

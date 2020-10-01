@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -45,6 +46,7 @@ namespace Core
             await using var context = new MyDbContext();
             try
             {
+                // await context.Database.EnsureDeletedAsync(); // delete database
                 await context.Database.MigrateAsync();
             }
             catch (Exception e)
@@ -52,6 +54,7 @@ namespace Core
                 await context.Database.EnsureDeletedAsync();
                 await context.Database.MigrateAsync();
             }
+
             return true;
         }
     }

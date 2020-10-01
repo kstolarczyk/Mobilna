@@ -12,7 +12,9 @@
         android:minHeight="25px"
         android:text="Login"
         android:id="@+id/login_text" />
+  
     <EditText
+        android:inputType="text"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +31,8 @@
         android:text="Password"
         android:id="@+id/password_text" />
      <EditText
-        android:textAppearance="?android:attr/textAppearanceLarge"
+       android:inputType="textPassword"
+       android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minWidth="25px"

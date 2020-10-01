@@ -1,8 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mvvmcross.droidx.MvxSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:orientation="vertical"
-              app:MvxBind="Refreshing IsBusy; RefreshCommand RefreshCommand"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout1">
+        <ImageView
+            android:src="@android:drawable/ic_menu_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:MvxBind="DrawableName IsConnected, Converter=IsConnectedDrawable"
+            android:id="@+id/imageView1" />
+      <TextView
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="5dp"
+        android:id="@+id/textView1"
+        app:MvxBind="Text IsConnected, Converter=IsConnected" />
+
+    </LinearLayout>
+
+      <mvvmcross.droidx.MvxSwipeRefreshLayout    
+    android:orientation="vertical"
+    app:MvxBind="Refreshing IsBusy; RefreshCommand RefreshCommand"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
   <MvvmCross.DroidX.RecyclerView.MvxRecyclerView
@@ -11,3 +40,4 @@
     app:MvxBind="ItemsSource Obiekty"
     app:MvxItemTemplate="@layout/obiekt_item" />
 </mvvmcross.droidx.MvxSwipeRefreshLayout>
+</LinearLayout>

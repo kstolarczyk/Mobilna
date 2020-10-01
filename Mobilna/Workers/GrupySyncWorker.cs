@@ -26,6 +26,7 @@ namespace Mobilna.Workers
             grupyTask.Wait();
             if(grupyTask.IsFaulted) return Result.InvokeRetry();
             var grupy = grupyTask.Result;
+            grupy.ForEach(g => g.Obiekty.Clear());
             try
             {
                 UpdateLocalDb(grupy, context);

@@ -80,6 +80,12 @@ namespace Core.Migrations
                     b.Property<bool>("Usuniety")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Zdjecie")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ZdjecieLokal")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("ObiektId");
 
                     b.HasIndex("GrupaObiektowId");

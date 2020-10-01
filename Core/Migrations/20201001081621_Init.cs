@@ -59,8 +59,10 @@ namespace Core.Migrations
                     Longitude = table.Column<decimal>(nullable: false),
                     Status = table.Column<int>(nullable: false),
                     UserId = table.Column<int>(nullable: true),
+                    Zdjecie = table.Column<string>(nullable: true),
                     OstatniaAktualizacja = table.Column<DateTime>(nullable: true),
-                    Usuniety = table.Column<bool>(nullable: false)
+                    Usuniety = table.Column<bool>(nullable: false),
+                    ZdjecieLokal = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
