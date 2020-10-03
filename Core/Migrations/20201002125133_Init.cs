@@ -26,8 +26,7 @@ namespace Core.Migrations
                 name: "GrupyObiektow",
                 columns: table => new
                 {
-                    GrupaObiektowId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    GrupaObiektowId = table.Column<int>(nullable: false),
                     Nazwa = table.Column<string>(nullable: true),
                     Symbol = table.Column<string>(nullable: true),
                     OstatniaAktualizacja = table.Column<DateTime>(nullable: true),
@@ -85,8 +84,7 @@ namespace Core.Migrations
                 name: "TypyParametrow",
                 columns: table => new
                 {
-                    TypParametrowId = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    TypParametrowId = table.Column<int>(nullable: false),
                     Symbol = table.Column<string>(nullable: true),
                     Nazwa = table.Column<string>(nullable: true),
                     TypDanych = table.Column<string>(nullable: true),

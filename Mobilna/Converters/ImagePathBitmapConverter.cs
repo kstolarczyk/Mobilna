@@ -13,7 +13,8 @@ namespace Mobilna.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is string path) || targetType != typeof(Bitmap)) return null;
+            if (!(value is string fileName) || targetType != typeof(Bitmap)) return null;
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), fileName);
             if (!File.Exists(path))
                 return BitmapFactory.DecodeStream(Android.App.Application.Context.Assets?.Open("placeholder.jpg"));
             var stream = File.OpenRead(path);

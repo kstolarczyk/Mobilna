@@ -17,10 +17,10 @@ namespace Core.Services
 
         public SftpService()
         {
-            _client = new SftpClient(Host, Username, Password);
+            _client = new SftpClient(Host, Port, Username, Password);
         }
 
-        public bool DownloadFile(string path, Stream destination)
+        public async Task<bool> DownloadFileAsync(string path, Stream destination)
         {
             if (!_client.IsConnected)
             {
@@ -30,9 +30,31 @@ namespace Core.Services
             try
             {
                 if (!_client.Exists(remotePath)) return false;
-                _client.DownloadFile(remotePath, destination);
+                await Task.Factory
+                    .FromAsync(_client.BeginDownloadFile(remotePath, destination), _client.EndDownloadFile)
+                    .ConfigureAwait(false);
             }
-            catch (Exception e)
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> SendFileAsync(string localPath, string fileName)
+        {
+            if (!_client.IsConnected)
+            {
+                _client.Connect();
+            }
+
+            try
+            {
+                if (!File.Exists(localPath)) return false;
+                await Task.Factory.FromAsync(_client.BeginUploadFile(File.OpenRead(localPath), Path.Combine(RemoteDir, fileName)), _client.EndDownloadFile).ConfigureAwait(false);
+            }
+            catch (Exception)
             {
                 return false;
             }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Core.Models
 {
@@ -8,6 +10,8 @@ namespace Core.Models
         {
             OstatniaAktualizacja ??= DateTime.Now;
         }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Required]
         public int TypParametrowId { get; set; }
         public string Symbol { get; set; }
         public string Nazwa { get; set; }

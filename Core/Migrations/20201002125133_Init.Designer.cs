@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Core.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20201001081621_Init")]
+    [Migration("20201002125133_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,7 +21,6 @@ namespace Core.Migrations
             modelBuilder.Entity("Core.Models.GrupaObiektow", b =>
                 {
                     b.Property<int>("GrupaObiektowId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Nazwa")
@@ -124,7 +123,6 @@ namespace Core.Migrations
             modelBuilder.Entity("Core.Models.TypParametrow", b =>
                 {
                     b.Property<int>("TypParametrowId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("AkceptowalneWartosci")

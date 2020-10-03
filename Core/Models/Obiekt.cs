@@ -28,18 +28,6 @@ namespace Core.Models
         public List<Parametr> Parametry { get; set; } = new List<Parametr>();
         public string ZdjecieLokal { get; set; }
 
-        public Obiekt Update(Obiekt other)
-        {
-            Nazwa = other.Nazwa;
-            Symbol = other.Symbol;
-            Usuniety = other.Usuniety;
-            OstatniaAktualizacja = other.OstatniaAktualizacja;
-            GrupaObiektowId = other.GrupaObiektowId;
-            Latitude = other.Latitude;
-            Longitude = other.Longitude;
-            Parametry = other.Parametry;
-            return this;
-        }
         public bool Equals(Obiekt other)
         {
             return other != null && other.RemoteId == RemoteId;

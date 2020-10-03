@@ -19,7 +19,6 @@ namespace Core.Migrations
             modelBuilder.Entity("Core.Models.GrupaObiektow", b =>
                 {
                     b.Property<int>("GrupaObiektowId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Nazwa")
@@ -122,7 +121,6 @@ namespace Core.Migrations
             modelBuilder.Entity("Core.Models.TypParametrow", b =>
                 {
                     b.Property<int>("TypParametrowId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("AkceptowalneWartosci")

@@ -10,8 +10,10 @@ using Core.Models;
 using Microsoft.EntityFrameworkCore;
 using MvvmCross.Plugin.Network.Rest;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
+using AggregateException = System.AggregateException;
 
 namespace Core.Services
 {
@@ -31,7 +33,9 @@ namespace Core.Services
             _client = new RestClient(ApiBaseUrl);
             _client.UseNewtonsoftJson(new JsonSerializerSettings()
             {
-                NullValueHandling = NullValueHandling.Ignore
+                NullValueHandling = NullValueHandling.Ignore,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ContractResolver = new DefaultContractResolver() { NamingStrategy = new CamelCaseNamingStrategy()}
             });
             ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, sslPolicyErrors) => true;
@@ -48,8 +52,9 @@ namespace Core.Services
                 .Select(r => _client.PostAsync<ApiResponse<Obiekt>>(r)).ToList();
             try
             {
-                await Task.WhenAll(tasks);
-                return tasks.Where(t => !t.IsFaulted).SelectMany(t => t.Result.Data).ToList();
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+                if(tasks.Any(t => t.IsFaulted)) throw new AggregateException(tasks.Where(t => t.IsFaulted).Select(t => t.Exception));
+                return tasks.SelectMany(t => t.Result.Data).ToList();
             }
             catch (Exception e)
             {
@@ -66,7 +71,7 @@ namespace Core.Services
             });
             try
             {
-                var response = await _client.PostAsync<ApiResponse<GrupaObiektow>>(request);
+                var response = await _client.PostAsync<ApiResponse<GrupaObiektow>>(request).ConfigureAwait(false);
                 return response.Data;
             }
             catch (Exception e)
@@ -83,7 +88,7 @@ namespace Core.Services
             });
             try
             {
-                var response = await _client.PostAsync<ApiResponse<TypParametrow>>(request);
+                var response = await _client.PostAsync<ApiResponse<TypParametrow>>(request).ConfigureAwait(false);
                 return response.Data;
             }
             catch (Exception e)
@@ -95,7 +100,7 @@ namespace Core.Services
         {
             var credentials = new { credentials = new { base64_login = Convert.ToBase64String(Encoding.UTF8.GetBytes(login)), base64_password = Convert.ToBase64String(Encoding.UTF8.GetBytes(password)) } };
             var request = new RestRequest($"User").AddJsonBody(credentials);
-            var response = await _client.ExecutePostAsync(request);
+            var response = await _client.ExecutePostAsync(request).ConfigureAwait(false);
             if (response.StatusCode == HttpStatusCode.Forbidden)
             {
                 throw new Exception("Wrong credentials!");
@@ -105,6 +110,48 @@ namespace Core.Services
             if (user != null) user.EncodedPassword = credentials.credentials.base64_password;
             return user;
         }
+
+        public async IAsyncEnumerable<Obiekt> SendNewObiektyAsync(IAsyncEnumerable<Obiekt> obiekty)
+        {
+            await foreach (var obiekt in obiekty.ConfigureAwait(false))
+            {
+                obiekt.Zdjecie = obiekt.ZdjecieLokal;
+                var request = new RestRequest("Obiekt/Dodaj").AddJsonBody(new { data = obiekt, credentials = _credentials});
+                var resp = await _client.ExecutePostAsync(request).ConfigureAwait(false);
+                var response = JsonConvert.DeserializeObject<ApiResponse<Obiekt>>(resp.Content);
+                if(response.Errors.Any()) continue;
+                obiekt.RemoteId = response.Data.FirstOrDefault()?.RemoteId;
+                yield return obiekt;
+            }
+        }
+
+        public async IAsyncEnumerable<Obiekt> SendUpdateObiektyAsync(IAsyncEnumerable<Obiekt> obiekty)
+        {
+            await foreach (var obiekt in obiekty.ConfigureAwait(false))
+            {
+                var tmp = obiekt.Zdjecie;
+                obiekt.Zdjecie = obiekt.ZdjecieLokal;
+                var body = JsonConvert.SerializeObject(new { data = obiekt, credentials = _credentials});
+                var request = new RestRequest($"Obiekt/Edytuj/{obiekt.RemoteId}").AddJsonBody(body);
+                var response = await _client.PutAsync<ApiResponse<Obiekt>>(request).ConfigureAwait(false);
+                obiekt.Zdjecie = tmp;
+                if(response.Errors.Any()) continue;
+                yield return obiekt;
+            }
+        }
+
+        public async IAsyncEnumerable<Obiekt> SendDeleteObiektyAsync(IAsyncEnumerable<Obiekt> obiekty)
+        {
+            await foreach (var obiekt in obiekty.ConfigureAwait(false))
+            {
+                var body = JsonConvert.SerializeObject(new { credentials = _credentials});
+                var request = new RestRequest($"Obiekt/Usun/{obiekt.RemoteId}").AddJsonBody(body);
+                var response = await _client.DeleteAsync<ApiResponse<object>>(request).ConfigureAwait(false);
+                if(response.Errors.Any()) continue;
+                yield return obiekt;
+            }
+        }
+
     }
 
     public class ApiResponse<T>
