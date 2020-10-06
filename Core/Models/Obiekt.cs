@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Core.Utility.Model;
 
 namespace Core.Models
@@ -11,6 +12,7 @@ namespace Core.Models
             OstatniaAktualizacja ??= DateTime.Now;
             ZdjecieLokal ??= string.Empty;
         }
+
         public int ObiektId { get; set; }
         public int? RemoteId { get; set; }
         public string Symbol { get; set; }
@@ -28,9 +30,31 @@ namespace Core.Models
         public List<Parametr> Parametry { get; set; } = new List<Parametr>();
         public string ZdjecieLokal { get; set; }
 
+        [NotMapped] public string Opis => $"[{Symbol}] {Nazwa}";
+
+        [NotMapped] public string Lokalizacja => FormattedCoords();
+
         public bool Equals(Obiekt other)
         {
             return other != null && other.RemoteId == RemoteId;
+        }
+
+        public string FormattedCoords()
+        {
+            var latitudeSeconds = Math.Abs(Latitude) * 3600;
+            var longitudeSeconds = Math.Abs(Longitude) * 3600;
+            var latDegrees = (int) (latitudeSeconds / 3600);
+            var longDegrees = (int) (longitudeSeconds / 3600);
+            latitudeSeconds -= latDegrees * 3600;
+            longitudeSeconds -= longDegrees * 3600;
+            var latMinutes = (int) (latitudeSeconds / 60);
+            var longMinutes = (int) (longitudeSeconds / 60);
+            latitudeSeconds -= latMinutes * 60;
+            longitudeSeconds -= longMinutes * 60;
+            var latSymbol = Latitude > 0 ? "N" : "S";
+            var longSymbol = Longitude > 0 ? "E" : "W";
+            return
+                $"{latDegrees}°{latMinutes}'{latitudeSeconds:F1}''{latSymbol}; {longDegrees}°{longMinutes}'{longitudeSeconds:F1}''{longSymbol}";
         }
     }
 }

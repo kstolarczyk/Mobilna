@@ -68,7 +68,10 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\CanSynchronizeDrawableConverter.cs" />
+    <Compile Include="Converters\CanSynchronizeTextConverter.cs" />
     <Compile Include="Converters\ImagePathBitmapConverter.cs" />
+    <Compile Include="Converters\IsConnectedColorConverter.cs" />
     <Compile Include="Converters\IsConnectedConverter.cs" />
     <Compile Include="Converters\IsConnectedDrawableConverter.cs" />
     <Compile Include="MainApplication.cs" />
@@ -133,10 +136,12 @@
     <PackageReference Include="MvvmCross.DroidX.SwipeRefreshLayout">
       <Version>7.0.1</Version>
     </PackageReference>
+    <PackageReference Include="MvvmCross.Plugin.Color">
+      <Version>7.0.1</Version>
+    </PackageReference>
     <PackageReference Include="MvvmCross.Plugin.File">
       <Version>7.0.1</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData">
@@ -147,7 +152,7 @@
     </PackageReference>
     <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
     <PackageReference Include="Xamarin.Google.Android.Material">
-      <Version>1.0.0.1</Version>
+      <Version>1.1.0.5-rc3</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -266,6 +271,54 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\mipmap-anydpi-v26\ic_portable_wifi_off_red_400_18dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_portable_wifi_off_red_400_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_wifi_tethering_green_400_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_wifi_tethering_green_400_48dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_portable_wifi_off_red_400_48dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_sync_yellow_400_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_sync_yellow_400_48dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_sync_green_400_48dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_sync_green_400_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_sync_disabled_red_400_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_sync_disabled_red_400_48dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_sync_problem_red_400_48dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_sync_problem_red_400_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_sync_problem_yellow_400_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_sync_problem_yellow_400_48dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\anim_sync_green_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_location_on_black_18dp.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

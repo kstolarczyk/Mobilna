@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Core.Exceptions;
+using Core.Wrappers;
 using MvvmCross.Navigation;
 
 namespace Core.ViewModels
@@ -18,52 +20,38 @@ namespace Core.ViewModels
         private readonly IUserRepository _repository;
         private readonly IRemoteLoginService _loginService;
         private readonly IMvxNavigationService _navigationService;
-        private string _login;
-        private string _password;
 
         public LoginViewModel(IUserRepository repository, IRemoteLoginService loginService, IMvxNavigationService navigationService)
         {
             _repository = repository;
             _loginService = loginService;
             _navigationService = navigationService;
+            LoginModel = new LoginWrapper();
+            SubmitCommand = new MvxAsyncCommand(Login, () => !LoginModel.HasErrors);
+            LoginModel.ErrorsChanged += (s, e) => SubmitCommand.RaiseCanExecuteChanged();
         }
-        public IMvxAsyncCommand SubmitCommand => new MvxAsyncCommand(Login);
 
         public async Task Login()
         {
             try
             {
-                var user = await _loginService.LoginAsync(LoginEdit, PasswordEdit);
+                var user = await _loginService.LoginAsync(LoginModel.Login, LoginModel.Password);
                 _repository.Insert(user);
                 await _repository.SaveAsync();
                 App.LoggedIn = true;
                 await _navigationService.Navigate<ObiektyViewModel>();
             }
-            catch (Exception e)
+            catch(ApiLoginException e)
             {
-                LoginEdit = "chujnia";
+                LoginModel.AddError(e.ApiError == ApiLoginError.Password ? nameof(LoginModel.Password) : nameof(LoginModel.Login), e.Message);
             }
 
         }
 
-        public string LoginEdit
-        {
-            get => _login;
-            set
-            {
-                _login = value;
-                RaisePropertyChanged(() => LoginEdit);
-            }
-        }
-        public string PasswordEdit
-        {
-            get => _password;
-            set
-            {
-                _password = value;
-                RaisePropertyChanged(() => PasswordEdit);
-            }
-        }
+        
+        public LoginWrapper LoginModel { get; set; }
+        public IMvxAsyncCommand SubmitCommand { get; set; }
+
     }
 }
 

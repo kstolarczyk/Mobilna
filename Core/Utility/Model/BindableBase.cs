@@ -9,16 +9,17 @@ namespace Core.Utility.Model
 {
     public class BindableBase : INotifyPropertyChanged
     {
-        private readonly Dictionary<string, PropertyInfo> _properties;
+        protected readonly Dictionary<string, object> Properties;
+
         public BindableBase()
         {
-            _properties = GetModelProperties();
+            Properties = GetModelProperties();
         }
 
-        protected Dictionary<string, PropertyInfo> GetModelProperties()
+        protected Dictionary<string, object> GetModelProperties()
         {
             return GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public)
-                .ToDictionary(p => p.Name, p => p);
+                .ToDictionary(p => p.Name, p => (object)null);
         }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -28,12 +29,12 @@ namespace Core.Utility.Model
 
         protected virtual T GetValue<T>([CallerMemberName] string propertyName = "")
         {
-            return (T)_properties[propertyName].GetValue(this);
+            return (T)Properties[propertyName];
         }
 
         protected virtual void SetValue<T>(T value, [CallerMemberName] string propertyName = "")
         {
-            _properties[propertyName].SetValue(this, value);
+            Properties[propertyName] = value;
             OnPropertyChanged(propertyName);
         }
 

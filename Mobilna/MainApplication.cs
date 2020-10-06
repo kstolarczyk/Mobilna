@@ -37,10 +37,10 @@ namespace Mobilna
                 RequiredNetworkType = NetworkType.Connected
             }).SetInitialDelay(1, TimeUnit.Hours)
                 .Build();
-            var obiektyRequest = Enumerable.Range(1, 15).Select(i => PeriodicWorkRequest.Builder.From<ObiektySyncWorker>(TimeSpan.FromMinutes(15)).SetConstraints(new Constraints()
+            var obiektyRequest = Enumerable.Range(1, 3).Select(i => PeriodicWorkRequest.Builder.From<ObiektySyncWorker>(TimeSpan.FromMinutes(15)).SetConstraints(new Constraints()
             {
                 RequiredNetworkType = NetworkType.Connected
-            }).SetInitialDelay(i, TimeUnit.Minutes).Build());
+            }).SetInitialDelay(i*5, TimeUnit.Minutes).Build());
 
             var workManager = WorkManager.GetInstance(this);
             

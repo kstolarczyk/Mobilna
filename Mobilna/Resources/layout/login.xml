@@ -2,50 +2,74 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:padding="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
+        android:text="Pierwsze logowanie"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:id="@+id/textView1" />
+  <androidx.cardview.widget.CardView
         android:minWidth="25px"
         android:minHeight="25px"
-        android:text="Login"
-        android:id="@+id/login_text" />
-  
-    <EditText
-        android:inputType="text"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        app:cardCornerRadius="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minWidth="25px"
-        android:minHeight="25px"
-        app:MvxBind="Text LoginEdit"
-        android:id="@+id/login_edit" />
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minWidth="25px"
-        android:minHeight="25px"
-        android:text="Password"
-        android:id="@+id/password_text" />
-     <EditText
-       android:inputType="textPassword"
-       android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minWidth="25px"
-        android:minHeight="25px"
-        app:MvxBind="Text PasswordEdit"
-        android:id="@+id/password_edit" />
-    <Button
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minWidth="25px"
-        android:minHeight="25px"
-        android:id="@+id/submit_button"
-        android:text="Login"    
-        app:MvxBind="Click SubmitCommand" />
+        android:layout_marginTop="20dp"
+        android:id="@+id/cardView1">
+        <LinearLayout
+            android:orientation="vertical"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:id="@+id/linearLayout1">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:errorEnabled="true"
+                android:id="@+id/textInputLayout1" >
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Login"
+                    android:text="Kurwy jebane"
+                    app:MvxBind="Text LoginModel.Login; Error LoginModel.LoginError"
+                    android:id="@+id/textInputEditText1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:minWidth="25px"
+                android:minHeight="25px"
+                app:errorEnabled="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textInputLayout2" >
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    app:MvxBind="Text LoginModel.Password; Error LoginModel.PasswordError"
+                    android:id="@+id/textInputEditText2" />
+            </com.google.android.material.textfield.TextInputLayout>
+          <Button
+            style="@style/Base.TextAppearance.MaterialComponents.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24dp"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:padding="10dp"
+            android:id="@+id/submit_button"
+            android:text="Login"
+            app:MvxBind="Click SubmitCommand" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
 </LinearLayout>

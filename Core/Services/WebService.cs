@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Exceptions;
 using Core.Models;
 using Microsoft.EntityFrameworkCore;
 using MvvmCross.Plugin.Network.Rest;
@@ -101,14 +102,16 @@ namespace Core.Services
             var credentials = new { credentials = new { base64_login = Convert.ToBase64String(Encoding.UTF8.GetBytes(login)), base64_password = Convert.ToBase64String(Encoding.UTF8.GetBytes(password)) } };
             var request = new RestRequest($"User").AddJsonBody(credentials);
             var response = await _client.ExecutePostAsync(request).ConfigureAwait(false);
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-            {
-                throw new Exception("Wrong credentials!");
-            }
-            
-            var user = JsonConvert.DeserializeObject<ApiResponse<User>>(response.Content).Data.FirstOrDefault();
+            var apiResponse = JsonConvert.DeserializeObject<ApiResponse<User>>(response.Content);
+            var user = apiResponse.Data.FirstOrDefault();
             if (user != null) user.EncodedPassword = credentials.credentials.base64_password;
-            return user;
+            return response.StatusCode switch
+            {
+                HttpStatusCode.OK => user,
+                HttpStatusCode.Unauthorized => throw new ApiLoginException(apiResponse.Errors.FirstOrDefault(), ApiLoginError.Password),
+                HttpStatusCode.Forbidden => throw new ApiLoginException(apiResponse.Errors.FirstOrDefault(), ApiLoginError.Login),
+                _ => throw new ApiLoginException(apiResponse.Errors.FirstOrDefault(), ApiLoginError.Undefined)
+            };
         }
 
         public async IAsyncEnumerable<Obiekt> SendNewObiektyAsync(IAsyncEnumerable<Obiekt> obiekty)

@@ -11,6 +11,7 @@ using Android.Views;
 using Android.Widget;
 using Core.ViewModels;
 using MvvmCross.Platforms.Android.Views;
+using MvvmCross.Platforms.Android.Views.Base;
 
 namespace Mobilna.Views
 {
