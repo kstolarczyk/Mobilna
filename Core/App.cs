@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Acr.UserDialogs;
 using Core.Models;
 using Core.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ namespace Core
             CreatableTypes().InNamespace("Core.Repositories").AsInterfaces().RegisterAsDynamic();
             CreatableTypes().InNamespace("Core.Services").AsInterfaces().RegisterAsLazySingleton();
             Mvx.IoCProvider.RegisterType<MyDbContext>();
+            Mvx.IoCProvider.RegisterType(() => UserDialogs.Instance);
             var context = Mvx.IoCProvider.Resolve<MyDbContext>();
             lock (Mutex)
             {
@@ -46,7 +48,7 @@ namespace Core
             await using var context = new MyDbContext();
             try
             {
-                // await context.Database.EnsureDeletedAsync(); // delete database
+                await context.Database.EnsureDeletedAsync(); // delete database
                 await context.Database.MigrateAsync().ConfigureAwait(false);
                 // await DodajObiektTestowy(context).ConfigureAwait(false);
             }

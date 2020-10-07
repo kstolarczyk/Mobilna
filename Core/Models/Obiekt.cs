@@ -34,6 +34,21 @@ namespace Core.Models
 
         [NotMapped] public string Lokalizacja => FormattedCoords();
 
+        public void Update(Obiekt other)
+        {
+            Nazwa = other.Nazwa;
+            Symbol = other.Symbol;
+            ZdjecieLokal = other.ZdjecieLokal;
+            Zdjecie = other.Zdjecie;
+            Latitude = other.Latitude;
+            Longitude = other.Longitude;
+            OstatniaAktualizacja = other.OstatniaAktualizacja;
+            foreach (var parametr in other.Parametry)
+            {
+                var toUpdate = Parametry.Find(p => p.TypParametrowId == parametr.TypParametrowId);
+                toUpdate.Update(parametr);
+            }
+        }
         public bool Equals(Obiekt other)
         {
             return other != null && other.RemoteId == RemoteId;

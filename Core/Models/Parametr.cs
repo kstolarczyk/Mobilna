@@ -8,5 +8,10 @@
         public string Wartosc { get; set; }
         public TypParametrow TypParametrow { get; set; }
         public Obiekt Obiekt { get; set; }
+
+        public void Update(Parametr other)
+        {
+            Wartosc = other.Wartosc;
+        }
     }
 }

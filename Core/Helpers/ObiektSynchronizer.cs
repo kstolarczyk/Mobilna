@@ -128,19 +128,20 @@ namespace Core.Helpers
             var usunieteId = obiekty.Where(o => o.Usuniety).Select(o => o.RemoteId).ToArray();
 
             using var sftpService = new SftpService();
-            await RemoveObiekty(context, context.Obiekty.Where(o => usunieteId.Contains(o.RemoteId))).ConfigureAwait(false);
+            await RemoveObiekty(context, context.Obiekty.AsNoTracking().Where(o => usunieteId.Contains(o.RemoteId))).ConfigureAwait(false);
             await UpdateObiekty(sftpService, context, nieUsuwane.Where(o => o.ObiektId != default)).ConfigureAwait(false);
             await AddObiekty(sftpService, context, nieUsuwane.Where(o => o.ObiektId == default)).ConfigureAwait(false);
         }
 
         private static async Task AddObiekty(SftpService sftpService, MyDbContext context, IEnumerable<Obiekt> obiekty)
         {
-            var user = await context.Users.FirstAsync().ConfigureAwait(false);
+            var user = await context.Users.AsNoTracking().FirstAsync().ConfigureAwait(false);
             var list = obiekty.ToList();
             var hashAlgoritm = HashAlgorithm.Create();
             var localFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             foreach (var obiekt in list)
             {
+                if (obiekt.UserId != user.UserId) obiekt.UserId = null;
                 if (string.IsNullOrEmpty(obiekt.Zdjecie))
                 {
                     context.Add(obiekt);
@@ -160,20 +161,22 @@ namespace Core.Helpers
                 context.Add(obiekt);
             }
 
-            await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private static async Task UpdateObiekty(SftpService sftpService, MyDbContext context, IEnumerable<Obiekt> obiekty)
         {
-            var user = await context.Users.FirstAsync().ConfigureAwait(false);
+            var user = await context.Users.AsNoTracking().FirstAsync().ConfigureAwait(false);
             var list = obiekty.ToList();
             var hashAlgoritm = HashAlgorithm.Create();
             var localFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             foreach (var obiekt in list)
             {
-                if (string.IsNullOrEmpty(obiekt.Zdjecie) || context.Obiekty.AsNoTracking().FirstOrDefault(o => o.RemoteId == obiekt.RemoteId)?.ZdjecieLokal == obiekt.Zdjecie)
+                var entity = await context.Obiekty.Include(o => o.Parametry)
+                    .FirstOrDefaultAsync(o => o.ObiektId == obiekt.ObiektId);
+                if (entity == null) continue;
+                if (string.IsNullOrEmpty(obiekt.Zdjecie) || entity.ZdjecieLokal == obiekt.Zdjecie)
                 {
-                    context.Update(obiekt);
+                    entity.Update(obiekt);
                     continue;
                 }
                 var ext = obiekt.Zdjecie.Substring(obiekt.Zdjecie.LastIndexOf('.'));
@@ -192,7 +195,7 @@ namespace Core.Helpers
                     obiekt.ZdjecieLokal = localImg;
                     obiekt.Zdjecie = localImg;
                 }
-                context.Update(obiekt);
+                entity.Update(obiekt);
             }
         }
 
@@ -208,8 +211,6 @@ namespace Core.Helpers
                 }
                 context.Obiekty.Remove(obiekt);
             }
-
-            await context.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public static event GlobalEvent SynchronizingChanged;

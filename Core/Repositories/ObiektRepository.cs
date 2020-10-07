@@ -32,32 +32,37 @@ namespace Core.Repositories
 
         public async Task<List<Obiekt>> GetAllAsync()
         {
-            return await _context.Obiekty.AsNoTracking().ToListAsync().ConfigureAwait(false);
+            return await _context.Obiekty
+                .Where(o => o.Status != 3).AsNoTracking().ToListAsync().ConfigureAwait(false);
         }
 
         public IAsyncEnumerable<Obiekt> GetAsStream()
         {
-            return _context.Obiekty.AsNoTracking().AsAsyncEnumerable();
+            return _context.Obiekty
+                .Where(o => o.Status != 3).AsNoTracking().AsAsyncEnumerable();
         }
 
         public async Task<Obiekt> GetOneAsync(int obiektId)
         {
-            return await _context.Obiekty.FindAsync(obiektId).ConfigureAwait(false);
+            return await _context.Obiekty.Include(o => o.User).FirstOrDefaultAsync(o => o.ObiektId == obiektId).ConfigureAwait(false);
         }
 
         public void Insert(Obiekt obiekt)
         {
+            obiekt.Status = 1;
             _context.Add(obiekt);
         }
 
         public void Update(Obiekt obiekt)
         {
+            obiekt.Status = 2;
             _context.Update(obiekt);
         }
 
         public void Delete(Obiekt obiekt)
         {
-            _context.Remove(obiekt);
+            obiekt.Status = 3;
+            _context.Update(obiekt);
         }
 
         public async Task InsertInstantlyAsync(Obiekt obiekt)

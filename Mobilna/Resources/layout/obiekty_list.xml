@@ -18,9 +18,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <MvvmCross.DroidX.RecyclerView.MvxRecyclerView
+          android:id="@+id/obiekty_recyclerview"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          app:MvxBind="ItemsSource Obiekty"
+          app:MvxBind="ItemsSource Obiekty; ItemLongClick ContextMenuCommand"
           app:MvxItemTemplate="@layout/obiekt_item" />
       </mvvmcross.droidx.MvxSwipeRefreshLayout>
     </androidx.cardview.widget.CardView>

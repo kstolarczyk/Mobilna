@@ -134,9 +134,8 @@ namespace Core.Services
             {
                 var tmp = obiekt.Zdjecie;
                 obiekt.Zdjecie = obiekt.ZdjecieLokal;
-                var body = JsonConvert.SerializeObject(new { data = obiekt, credentials = _credentials});
-                var request = new RestRequest($"Obiekt/Edytuj/{obiekt.RemoteId}").AddJsonBody(body);
-                var response = await _client.PutAsync<ApiResponse<Obiekt>>(request).ConfigureAwait(false);
+                var request = new RestRequest($"Obiekt/Edytuj/{obiekt.RemoteId}").AddJsonBody(new { data = obiekt, credentials = _credentials});
+                var response = await _client.PostAsync<ApiResponse<Obiekt>>(request).ConfigureAwait(false);
                 obiekt.Zdjecie = tmp;
                 if(response.Errors.Any()) continue;
                 yield return obiekt;
@@ -147,10 +146,9 @@ namespace Core.Services
         {
             await foreach (var obiekt in obiekty.ConfigureAwait(false))
             {
-                var body = JsonConvert.SerializeObject(new { credentials = _credentials});
-                var request = new RestRequest($"Obiekt/Usun/{obiekt.RemoteId}").AddJsonBody(body);
-                var response = await _client.DeleteAsync<ApiResponse<object>>(request).ConfigureAwait(false);
-                if(response.Errors.Any()) continue;
+                var request = new RestRequest($"Obiekt/Usun/{obiekt.RemoteId}").AddJsonBody(new { credentials = _credentials});
+                var response = await _client.ExecutePostAsync(request).ConfigureAwait(false);
+                if (response.StatusCode != HttpStatusCode.OK) continue;
                 yield return obiekt;
             }
         }

@@ -1,13 +1,16 @@
 ﻿using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Timers;
+using Acr.UserDialogs;
 using Core.Extensions;
 using Core.Helpers;
+using Core.Interactions;
 using Core.Models;
 using Core.Repositories;
 using Core.Services;
 using Core.Utility.Enum;
 using Core.Utility.ViewModel;
+using MvvmCross;
 using MvvmCross.Commands;
 using MvvmCross.Plugin.Network.Reachability;
 using MvvmCross.ViewModels;
@@ -20,18 +23,51 @@ namespace Core.ViewModels
         private readonly IMvxReachability _reachability;
         private bool _isBusy;
         private bool _isConnected;
-
+        private readonly MvxInteraction<ContextMenuInteraction<Obiekt>> _contextMenuInteraction = new MvxInteraction<ContextMenuInteraction<Obiekt>>();
         public ObiektyViewModel(IObiektRepository repository, IMvxReachability reachability)
         {
             _repository = repository;
             _reachability = reachability;
             var timer = new Timer() {Interval = 5000, AutoReset = true, Enabled = true};
             timer.Elapsed += Elapsed;
+            ContextMenuCommand = new MvxAsyncCommand<Obiekt>(async o => _contextMenuInteraction.Raise(new ContextMenuInteraction<Obiekt>()
+            {
+                CurrentObiekt = await _repository.GetOneAsync(o.ObiektId),
+                ContextMenuCallback = ContextMenuHandle
+            }));
             SynchronizeCommand = new MvxAsyncCommand(Synchronize, () => CanSynchronize);
             RefreshCommand = new MvxAsyncCommand(Refresh);
             ObiektSynchronizer.SynchronizingChanged += NotifySyncChanged;
-            ObiektSynchronizer.SynchronizingChanged += async () => await Refresh();
+            ObiektSynchronizer.SynchronizingChanged += async () => await Reload();
         }
+
+        private async void ContextMenuHandle(Obiekt obiekt, ContextMenuOption option)
+        {
+            switch (option)
+            {
+                case ContextMenuOption.Details:
+                    break;
+                case ContextMenuOption.Delete:
+                    if (await Mvx.IoCProvider.Resolve<IUserDialogs>().ConfirmAsync("Czy na pewno chcesz usunąć?",
+                        $"Potwierdź usunięcie {obiekt.Symbol}", "Tak", "Nie"))
+                    {
+                        DeleteObiekt(obiekt);
+                    }
+                    break;
+                case ContextMenuOption.Edit:
+                    break;
+                case ContextMenuOption.None:
+                    return;
+            }
+        }
+
+        private async void DeleteObiekt(Obiekt obiekt)
+        {
+            await _repository.DeleteInstantlyAsync(obiekt);
+            Obiekty.Remove(obiekt);
+        }
+
+        public MvxAsyncCommand<Obiekt> ContextMenuCommand { get; set; }
 
         public void NotifySyncChanged()
         {
@@ -63,11 +99,16 @@ namespace Core.ViewModels
 
         public async Task Refresh()
         {
-            if (ObiektSynchronizer.IsSynchronizing) return;
             IsBusy = true;
+            await Reload();
+            IsBusy = false;
+        }
+
+        public async Task Reload()
+        {
+            if (ObiektSynchronizer.IsSynchronizing) return;
             Obiekty.Clear();
             await Initialize();
-            IsBusy = false;
         }
 
         public bool IsBusy
@@ -91,5 +132,6 @@ namespace Core.ViewModels
         public bool CanSynchronize => IsConnected && !ObiektSynchronizer.IsSynchronizing;
         public IMvxAsyncCommand SynchronizeCommand { get; set; }
         public MvxObservableCollection<Obiekt> Obiekty { get; } = new MvxObservableCollection<Obiekt>();
+        public IMvxInteraction<ContextMenuInteraction<Obiekt>> ContextMenuInteraction => _contextMenuInteraction;
     }
 }

@@ -124,6 +124,9 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_round.png" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Acr.UserDialogs">
+      <Version>7.1.0.454</Version>
+    </PackageReference>
     <PackageReference Include="MvvmCross">
       <Version>7.0.1</Version>
     </PackageReference>
@@ -320,6 +323,7 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_location_on_black_18dp.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.
