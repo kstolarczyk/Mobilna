@@ -12,6 +12,7 @@ using Core.Utility.Enum;
 using Core.Utility.ViewModel;
 using MvvmCross;
 using MvvmCross.Commands;
+using MvvmCross.Navigation;
 using MvvmCross.Plugin.Network.Reachability;
 using MvvmCross.ViewModels;
 
@@ -24,10 +25,13 @@ namespace Core.ViewModels
         private bool _isBusy;
         private bool _isConnected;
         private readonly MvxInteraction<ContextMenuInteraction<Obiekt>> _contextMenuInteraction = new MvxInteraction<ContextMenuInteraction<Obiekt>>();
-        public ObiektyViewModel(IObiektRepository repository, IMvxReachability reachability)
+        private IMvxNavigationService _navigation;
+
+        public ObiektyViewModel(IObiektRepository repository, IMvxReachability reachability, IMvxNavigationService navigationService)
         {
             _repository = repository;
             _reachability = reachability;
+            _navigation = navigationService;
             var timer = new Timer() {Interval = 5000, AutoReset = true, Enabled = true};
             timer.Elapsed += Elapsed;
             ContextMenuCommand = new MvxAsyncCommand<Obiekt>(async o => _contextMenuInteraction.Raise(new ContextMenuInteraction<Obiekt>()
@@ -46,6 +50,7 @@ namespace Core.ViewModels
             switch (option)
             {
                 case ContextMenuOption.Details:
+                    await _navigation.Navigate<ObiektDetailsViewModel, int>(obiekt.ObiektId);
                     break;
                 case ContextMenuOption.Delete:
                     if (await Mvx.IoCProvider.Resolve<IUserDialogs>().ConfirmAsync("Czy na pewno chcesz usunąć?",

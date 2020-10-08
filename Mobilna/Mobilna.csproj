@@ -79,6 +79,7 @@
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="SplashScreen.cs" />
     <Compile Include="Views\LoginView.cs" />
+    <Compile Include="Views\ObiektDetailsView.cs" />
     <Compile Include="Views\ObiektyView.cs" />
     <Compile Include="Workers\BaseWorker.cs" />
     <Compile Include="Workers\GrupySyncWorker.cs" />
@@ -323,7 +324,31 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_location_on_black_18dp.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekt_details.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_fullscreen_black_18dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_fullscreen_black_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_fullscreen_black_24dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_gps_fixed_black_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_gps_fixed_black_24dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\parametr.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.

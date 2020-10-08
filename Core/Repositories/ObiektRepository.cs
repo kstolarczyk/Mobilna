@@ -44,7 +44,9 @@ namespace Core.Repositories
 
         public async Task<Obiekt> GetOneAsync(int obiektId)
         {
-            return await _context.Obiekty.Include(o => o.User).FirstOrDefaultAsync(o => o.ObiektId == obiektId).ConfigureAwait(false);
+            return await _context.Obiekty.Include(o => o.User)
+                .Include(o => o.Parametry)
+                .ThenInclude(p => p.TypParametrow).FirstOrDefaultAsync(o => o.ObiektId == obiektId).ConfigureAwait(false);
         }
 
         public void Insert(Obiekt obiekt)

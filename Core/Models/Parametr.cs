@@ -1,4 +1,6 @@
-﻿namespace Core.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Core.Models
 {
     public class Parametr
     {
@@ -8,6 +10,8 @@
         public string Wartosc { get; set; }
         public TypParametrow TypParametrow { get; set; }
         public Obiekt Obiekt { get; set; }
+        [NotMapped] public string NazwaParametru => $"{TypParametrow?.Nazwa}:";
+        [NotMapped] public string WartoscParametru => $"{Wartosc}" + (string.IsNullOrEmpty(TypParametrow?.JednostkaMiary) ? "" : $" [{TypParametrow.JednostkaMiary}]");
 
         public void Update(Parametr other)
         {

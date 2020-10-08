@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+  <androidx.cardview.widget.CardView
+    android:minWidth="25px"
+    android:minHeight="25px"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/cardView1">
+    <LinearLayout
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+      <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout1">
+        <androidx.cardview.widget.CardView
+          android:minWidth="25px"
+          android:minHeight="25px"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          app:cardCornerRadius="10dp"
+          android:id="@+id/cardView2">
+          <ImageView
+            android:src="@android:drawable/ic_menu_gallery"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            app:MvxBind="Bitmap Obiekt.ZdjecieLokal, Converter=ImagePathBitmap"
+            android:id="@+id/imageView1" />
+        </androidx.cardview.widget.CardView>
+        <LinearLayout
+          android:layout_weight="1"
+          android:orientation="vertical"
+          android:layout_marginLeft="5dp"
+          android:minWidth="25px"
+          android:minHeight="25px"
+          android:layout_gravity="center_vertical"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/linearLayout2">
+          <TextView
+            android:text="Large Text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:MvxBind="Text Obiekt.Nazwa"
+            android:id="@+id/textView1" />
+          <TextView
+            android:text="Medium Text"
+            app:MvxBind="Text Obiekt.Symbol"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView4" />
+        </LinearLayout>
+                <Button
+                  style="@style/Base.TextAppearance.MaterialComponents.Button"
+                  android:layout_margin="5dp"
+                    android:paddingRight="24dp"
+                    android:drawableEnd="@drawable/ic_fullscreen_black_36dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/button5" />
+
+      </LinearLayout>
+      <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout3">
+        <ImageView
+          android:src="@drawable/ic_location_on_black_18dp"
+          android:layout_width="80dp"
+          android:layout_height="48dp"
+          android:id="@+id/imageView2" />
+        <LinearLayout
+          android:orientation="vertical"
+          android:minWidth="25px"
+          android:minHeight="25px"
+          android:layout_weight="1"
+          android:layout_marginLeft="5dp"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:id="@+id/linearLayout4">
+          <TextView
+            android:text="Medium Text"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:MvxBind="Text Obiekt.Lokalizacja"
+            android:id="@+id/textView2" />
+          <TextView
+            android:text="Medium Text"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:MvxBind="Text Obiekt.Lokalizacja"
+            android:id="@+id/textView3" />
+        </LinearLayout>
+        <Button
+          android:layout_weight="0"
+          style="@style/Base.TextAppearance.MaterialComponents.Button"
+          android:drawableLeft="@drawable/ic_gps_fixed_black_24dp"
+          android:text="Mapa"
+          android:layout_marginRight="5dp"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:id="@+id/button2" />
+
+      </LinearLayout>
+      <mvvmcross.droidx.recyclerview.MvxRecyclerView
+        android:layout_weight="1"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:padding="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:MvxBind="ItemsSource Obiekt.Parametry"
+        app:MvxItemTemplate="@layout/parametr"
+        android:id="@+id/mvxRecyclerView1" />
+      <LinearLayout
+        android:layout_weight="0"
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:id="@+id/linearLayout5">
+        <Button
+          app:iconTint="?android:attr/textColorPrimary"
+          android:textColor="?android:attr/textColorPrimary"
+          app:icon="@android:drawable/ic_menu_edit"
+          app:iconSize="24dp"
+          android:text="@string/edytuj"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_marginHorizontal="5dp"
+          android:id="@+id/button3" />
+        <Button
+          app:icon="@android:drawable/ic_menu_close_clear_cancel"
+          app:iconSize="24dp"
+          app:iconTint="?android:attr/textColorPrimary"
+          android:textColor="?android:attr/textColorPrimary"
+          android:text="@string/usun"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:id="@+id/button4" />
+      </LinearLayout>
+
+    </LinearLayout>
+
+  </androidx.cardview.widget.CardView>
+</LinearLayout>
