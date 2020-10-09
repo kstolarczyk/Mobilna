@@ -30,5 +30,9 @@ namespace Core.Models
             TypyParametrow = other.TypyParametrow;
             return this;
         }
+        public override string ToString()
+        {
+            return Nazwa.ToString();
+        }
     }
 }
