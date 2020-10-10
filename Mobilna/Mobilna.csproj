@@ -79,6 +79,7 @@
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="SplashScreen.cs" />
     <Compile Include="Views\LoginView.cs" />
+    <Compile Include="Views\MapView.cs" />
     <Compile Include="Views\ObiektDetailsView.cs" />
     <Compile Include="Views\ObiektyView.cs" />
     <Compile Include="Workers\BaseWorker.cs" />
@@ -148,6 +149,15 @@
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.0.3" />
+    <PackageReference Include="Xamarin.Android.Support.Fragment">
+      <Version>28.0.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Fragment">
+      <Version>1.2.5.3</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4">
+      <Version>1.0.0.5</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData">
       <Version>2.2.0.3</Version>
     </PackageReference>
@@ -157,6 +167,9 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
     <PackageReference Include="Xamarin.Google.Android.Material">
       <Version>1.1.0.5-rc3</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.GooglePlayServices.Maps">
+      <Version>71.1610.4</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -348,6 +361,14 @@
     <AndroidResource Include="Resources\layout\parametr.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekt_map.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_zoom_in_black_36dp.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

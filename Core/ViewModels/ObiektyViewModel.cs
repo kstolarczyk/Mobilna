@@ -25,7 +25,7 @@ namespace Core.ViewModels
         private bool _isBusy;
         private bool _isConnected;
         private readonly MvxInteraction<ContextMenuInteraction<Obiekt>> _contextMenuInteraction = new MvxInteraction<ContextMenuInteraction<Obiekt>>();
-        private IMvxNavigationService _navigation;
+        private readonly IMvxNavigationService _navigation;
 
         public ObiektyViewModel(IObiektRepository repository, IMvxReachability reachability, IMvxNavigationService navigationService)
         {
@@ -39,6 +39,7 @@ namespace Core.ViewModels
                 CurrentObiekt = await _repository.GetOneAsync(o.ObiektId),
                 ContextMenuCallback = ContextMenuHandle
             }));
+            DetailsCommand = new MvxAsyncCommand<Obiekt>(Details);
             SynchronizeCommand = new MvxAsyncCommand(Synchronize, () => CanSynchronize);
             RefreshCommand = new MvxAsyncCommand(Refresh);
             ObiektSynchronizer.SynchronizingChanged += NotifySyncChanged;
@@ -50,7 +51,7 @@ namespace Core.ViewModels
             switch (option)
             {
                 case ContextMenuOption.Details:
-                    await _navigation.Navigate<ObiektDetailsViewModel, int>(obiekt.ObiektId);
+                    await Details(obiekt);
                     break;
                 case ContextMenuOption.Delete:
                     if (await Mvx.IoCProvider.Resolve<IUserDialogs>().ConfirmAsync("Czy na pewno chcesz usunąć?",
@@ -64,6 +65,11 @@ namespace Core.ViewModels
                 case ContextMenuOption.None:
                     return;
             }
+        }
+
+        public async Task Details(Obiekt obiekt)
+        {
+            await _navigation.Navigate<ObiektDetailsViewModel, int>(obiekt.ObiektId);
         }
 
         private async void DeleteObiekt(Obiekt obiekt)
@@ -138,5 +144,6 @@ namespace Core.ViewModels
         public IMvxAsyncCommand SynchronizeCommand { get; set; }
         public MvxObservableCollection<Obiekt> Obiekty { get; } = new MvxObservableCollection<Obiekt>();
         public IMvxInteraction<ContextMenuInteraction<Obiekt>> ContextMenuInteraction => _contextMenuInteraction;
+        public IMvxAsyncCommand<Obiekt> DetailsCommand { get; set; }
     }
 }

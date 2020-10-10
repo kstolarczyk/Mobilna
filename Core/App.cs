@@ -48,7 +48,7 @@ namespace Core
             await using var context = new MyDbContext();
             try
             {
-                await context.Database.EnsureDeletedAsync(); // delete database
+                // await context.Database.EnsureDeletedAsync(); // delete database
                 await context.Database.MigrateAsync().ConfigureAwait(false);
                 // await DodajObiektTestowy(context).ConfigureAwait(false);
             }

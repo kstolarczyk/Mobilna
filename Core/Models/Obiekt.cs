@@ -32,7 +32,8 @@ namespace Core.Models
 
         [NotMapped] public string Opis => $"[{Symbol}] {Nazwa}";
 
-        [NotMapped] public string Lokalizacja => FormattedCoords();
+        [NotMapped] public string LokalizacjaOneLine => FormattedCoords("; ");
+        [NotMapped] public string LokalizacjaMultiLine => FormattedCoords(Environment.NewLine);
 
         public void Update(Obiekt other)
         {
@@ -54,7 +55,7 @@ namespace Core.Models
             return other != null && other.RemoteId == RemoteId;
         }
 
-        public string FormattedCoords()
+        public string FormattedCoords(string delimiter)
         {
             var latitudeSeconds = Math.Abs(Latitude) * 3600;
             var longitudeSeconds = Math.Abs(Longitude) * 3600;
@@ -69,7 +70,7 @@ namespace Core.Models
             var latSymbol = Latitude > 0 ? "N" : "S";
             var longSymbol = Longitude > 0 ? "E" : "W";
             return
-                $"{latDegrees}°{latMinutes}'{latitudeSeconds:F1}''{latSymbol}; {longDegrees}°{longMinutes}'{longitudeSeconds:F1}''{longSymbol}";
+                $"{latDegrees}°{latMinutes}'{latitudeSeconds:F1}''{latSymbol}{delimiter}{longDegrees}°{longMinutes}'{longitudeSeconds:F1}''{longSymbol}";
         }
     }
 }

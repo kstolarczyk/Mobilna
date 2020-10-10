@@ -19,6 +19,7 @@
         android:orientation="horizontal"
         android:minWidth="25px"
         android:minHeight="25px"
+        android:layout_marginVertical="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/linearLayout1">
@@ -61,33 +62,37 @@
             android:layout_height="wrap_content"
             android:id="@+id/textView4" />
         </LinearLayout>
-                <Button
-                  style="@style/Base.TextAppearance.MaterialComponents.Button"
-                  android:layout_margin="5dp"
-                    android:paddingRight="24dp"
-                    android:drawableEnd="@drawable/ic_fullscreen_black_36dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:id="@+id/button5" />
+        <ImageButton
+          android:layout_margin="5dp"
+          style="@android:style/Widget.Material.Button"
+          android:foreground="?android:attr/selectableItemBackgroundBorderless"
+          android:background="?android:attr/colorPrimary"
+          android:src="@drawable/ic_zoom_in_black_36dp"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          app:MvxBind="Click ShowImageCommand"
+          android:id="@+id/button5" />
 
       </LinearLayout>
       <LinearLayout
         android:orientation="horizontal"
         android:minWidth="25px"
         android:minHeight="25px"
+        android:layout_marginVertical="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/linearLayout3">
         <ImageView
           android:src="@drawable/ic_location_on_black_18dp"
           android:layout_width="80dp"
-          android:layout_height="48dp"
+          android:layout_height="64dp"
           android:id="@+id/imageView2" />
         <LinearLayout
           android:orientation="vertical"
           android:minWidth="25px"
           android:minHeight="25px"
           android:layout_weight="1"
+          android:gravity="center"
           android:layout_marginLeft="5dp"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
@@ -97,24 +102,19 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:MvxBind="Text Obiekt.Lokalizacja"
+            app:MvxBind="Text Obiekt.LokalizacjaMultiLine"
             android:id="@+id/textView2" />
-          <TextView
-            android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:MvxBind="Text Obiekt.Lokalizacja"
-            android:id="@+id/textView3" />
         </LinearLayout>
-        <Button
+        <ImageButton
           android:layout_weight="0"
-          style="@style/Base.TextAppearance.MaterialComponents.Button"
-          android:drawableLeft="@drawable/ic_gps_fixed_black_24dp"
-          android:text="Mapa"
+          style="@android:style/Widget.Material.Button"
+          android:src="@drawable/ic_gps_fixed_black_36dp"
+          android:foreground="?android:attr/selectableItemBackgroundBorderless"
+          android:background="?android:attr/colorPrimary"
           android:layout_marginRight="5dp"
           android:layout_width="wrap_content"
           android:layout_height="match_parent"
+          app:MvxBind="Click ShowMapCommand"
           android:id="@+id/button2" />
 
       </LinearLayout>
@@ -126,6 +126,7 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scrollbars="vertical"
         app:MvxBind="ItemsSource Obiekt.Parametry"
         app:MvxItemTemplate="@layout/parametr"
         android:id="@+id/mvxRecyclerView1" />
@@ -143,6 +144,7 @@
           android:textColor="?android:attr/textColorPrimary"
           app:icon="@android:drawable/ic_menu_edit"
           app:iconSize="24dp"
+          android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
           android:text="@string/edytuj"
           android:layout_width="wrap_content"
           android:layout_height="match_parent"
@@ -150,10 +152,13 @@
           android:id="@+id/button3" />
         <Button
           app:icon="@android:drawable/ic_menu_close_clear_cancel"
-          app:iconSize="24dp"
+          app:iconSize="32dp"
+          android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
           app:iconTint="?android:attr/textColorPrimary"
           android:textColor="?android:attr/textColorPrimary"
           android:text="@string/usun"
+          android:background="@android:color/holo_red_dark"
+          app:MvxBind="Click DeleteObiektCommand"
           android:layout_width="wrap_content"
           android:layout_height="match_parent"
           android:id="@+id/button4" />
