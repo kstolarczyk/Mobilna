@@ -50,12 +50,12 @@ namespace Core.Services
                 {
                     credentials = _credentials, lastUpdate
                 }))
-                .Select(r => _client.PostAsync<ApiResponse<Obiekt>>(r)).ToList();
+                .Select(r => _client.ExecutePostAsync(r)).ToList();
             try
             {
                 await Task.WhenAll(tasks).ConfigureAwait(false);
                 if(tasks.Any(t => t.IsFaulted)) throw new AggregateException(tasks.Where(t => t.IsFaulted).Select(t => t.Exception));
-                return tasks.SelectMany(t => t.Result.Data).ToList();
+                return tasks.SelectMany(t => JsonConvert.DeserializeObject<ApiResponse<Obiekt>>(t.Result.Content).Data).ToList();
             }
             catch (Exception e)
             {

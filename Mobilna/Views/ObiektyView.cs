@@ -1,26 +1,17 @@
-﻿using System;
-using Acr.UserDialogs;
+﻿using Acr.UserDialogs;
 using Android.App;
 using Android.OS;
 using Android.Views;
-using Android.Widget;
-using AndroidX.Work;
 using Core.Interactions;
 using Core.Models;
-using Core.Services;
 using Core.ViewModels;
-using Mobilna.Workers;
-using MvvmCross;
 using MvvmCross.Base;
-using MvvmCross.Commands;
 using MvvmCross.DroidX.RecyclerView;
-using MvvmCross.Platforms.Android.Binding;
 using MvvmCross.Platforms.Android.Views;
-using MvvmCross.ViewModels;
 
 namespace Mobilna.Views
 {
-    [Activity(Label = "@string/obiekty_title", MainLauncher = true)]
+    [Activity(Label = "@string/obiekty_title")]
     public class ObiektyView : MvxActivity<ObiektyViewModel>
     {
         private MvxRecyclerView _listView;

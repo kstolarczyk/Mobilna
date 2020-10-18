@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Core.Models
 {
@@ -25,9 +28,23 @@ namespace Core.Models
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<TypParametrow>().Property(t => t.AkceptowalneWartosci)
                 .HasConversion(
-                    v => string.Join(",", v),
-                    v => v.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries)
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<string[]>(v)
                 );
+        }
+
+        public async Task ClearExceptUserAsync()
+        {
+            var user = await Users.FirstOrDefaultAsync().ConfigureAwait(false);
+            var images = await Obiekty.AsNoTracking().Select(o => o.ZdjecieLokal).Where(s => !string.IsNullOrEmpty(s))
+                .ToListAsync().ConfigureAwait(false);
+            await Database.EnsureDeletedAsync().ConfigureAwait(false);
+            await Database.MigrateAsync().ConfigureAwait(false);
+            var folder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            images.AsParallel().ForAll(s => File.Delete(Path.Combine(folder, s)));
+            await Users.AddAsync(user).ConfigureAwait(false);
+            await SaveChangesAsync().ConfigureAwait(false);
+
         }
 
         public DbSet<Obiekt> Obiekty { get; set; }
@@ -36,4 +53,14 @@ namespace Core.Models
         public DbSet<User> Users { get; set; }
         public DbSet<GrupaObiektow> GrupyObiektow { get; set; }
     }
+
+    public static class DbSetExtensions
+    {
+        public static void Clear<T>(this DbSet<T> table) where T : class
+        {
+            if (!table.Any()) return;
+            table.RemoveRange(table);
+        }
+    }
 }
+

@@ -76,13 +76,17 @@
     <Compile Include="Converters\IsConnectedDrawableConverter.cs" />
     <Compile Include="ItemTemplateSelector\TypParametruTemplateSelector.cs" />
     <Compile Include="MainApplication.cs" />
+    <Compile Include="MySetup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
+    <Compile Include="Services\PhotoPickerService.cs" />
+    <Compile Include="Services\ToastNotificationService.cs" />
     <Compile Include="SplashScreen.cs" />
+    <Compile Include="Views\ComboView.cs" />
     <Compile Include="Views\LoginView.cs" />
     <Compile Include="Views\MapView.cs" />
     <Compile Include="Views\ObiektDetailsView.cs" />
-    <Compile Include="Views\ObiektyFormView.cs" />
+    <Compile Include="Views\ObiektFormView.cs" />
     <Compile Include="Views\ObiektyView.cs" />
     <Compile Include="Workers\BaseWorker.cs" />
     <Compile Include="Workers\GrupySyncWorker.cs" />
@@ -396,6 +400,19 @@
   <ItemGroup>
     <AndroidResource Include="Resources\layout\obiekt_form_time_item.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_add_black_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_zoom_in_black_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_camera_alt_black_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_crop_original_black_36dp.xml" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.

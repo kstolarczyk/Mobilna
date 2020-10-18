@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MvvmCross.ViewModels;
 
 namespace Core.Models
 {
-    public class GrupaObiektow
+    public class GrupaObiektow : MvxNotifyPropertyChanged
     {
         public GrupaObiektow()
         {
@@ -14,8 +15,11 @@ namespace Core.Models
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Required]
         public int GrupaObiektowId { get; set; }
-        public string Nazwa { get; set; }
-        public string Symbol { get; set; }
+
+        private string _nazwa;
+        private string _symbol;
+        public string Nazwa { get => _nazwa; set => SetProperty(ref _nazwa, value); }
+        public string Symbol { get => _symbol; set => SetProperty(ref _symbol, value); }
         public DateTime? OstatniaAktualizacja { get; set; }
         public bool Usunieta { get; set; }
         public List<Obiekt> Obiekty { get; set; } = new List<Obiekt>();
@@ -32,7 +36,7 @@ namespace Core.Models
         }
         public override string ToString()
         {
-            return Nazwa.ToString();
+            return $"{Nazwa} [{Symbol}]";
         }
     }
 }

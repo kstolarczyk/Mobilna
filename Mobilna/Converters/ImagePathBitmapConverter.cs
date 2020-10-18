@@ -16,8 +16,11 @@ namespace Mobilna.Converters
             if (!(value is string fileName) || targetType != typeof(Bitmap)) return null;
             var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), fileName);
             if (!File.Exists(path))
-                return BitmapFactory.DecodeStream(Android.App.Application.Context.Assets?.Open("placeholder.jpg"));
-            var stream = File.OpenRead(path);
+            {
+                using var placeholderStream = Android.App.Application.Context.Assets?.Open("placeholder.jpg");
+                return BitmapFactory.DecodeStream(placeholderStream);
+            }
+            using var stream = File.OpenRead(path);
             var bmp = BitmapFactory.DecodeStream(stream);
             return bmp;
         }

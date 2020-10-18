@@ -1,6 +1,5 @@
 ﻿using Android;
 using Core.Models;
-//using MvvmCross.Droid.Support.V7.RecyclerView.ItemTemplates;
 using MvvmCross.DroidX.RecyclerView.ItemTemplates;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace Mobilna.ItemTemplateSelector
 
         }
         public int ItemTemplateId { set; get; }
-        public int GetItemViewType(Object o)
+        public int GetItemViewType(object o)
         {
             if (!(o is Parametr p))
                 return -1;

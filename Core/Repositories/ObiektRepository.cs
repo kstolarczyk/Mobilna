@@ -12,6 +12,7 @@ namespace Core.Repositories
         IAsyncEnumerable<Obiekt> GetAsStream();
         Task<List<Obiekt>> GetAllAsync();
         Task<Obiekt> GetOneAsync(int obiektId);
+        Task<Obiekt> GetOrCreateAsync(int? obiektId); 
         void Insert(Obiekt obiekt);
         void Update(Obiekt obiekt);
         void Delete(Obiekt obiekt);
@@ -45,14 +46,21 @@ namespace Core.Repositories
         public async Task<Obiekt> GetOneAsync(int obiektId)
         {
             return await _context.Obiekty.Include(o => o.User)
+                .Include(o => o.GrupaObiektow)
                 .Include(o => o.Parametry)
                 .ThenInclude(p => p.TypParametrow).FirstOrDefaultAsync(o => o.ObiektId == obiektId).ConfigureAwait(false);
+        }
+
+        public async Task<Obiekt> GetOrCreateAsync(int? obiektId)
+        {
+            return obiektId == null ? new Obiekt() : await GetOneAsync((int) obiektId).ConfigureAwait(false);
         }
 
         public void Insert(Obiekt obiekt)
         {
             obiekt.Status = 1;
-            _context.Add(obiekt);
+            obiekt.User = _context.Users.FirstOrDefault();
+            _context.Update(obiekt);
         }
 
         public void Update(Obiekt obiekt)

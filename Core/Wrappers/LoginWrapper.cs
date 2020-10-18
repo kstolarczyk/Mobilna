@@ -5,15 +5,17 @@ namespace Core.Wrappers
 {
     public class LoginWrapper : ValidateBase
     {
+        private string _login;
+        private string _password;
         public LoginWrapper()
         {
             ValidateEntity();
-            ErrorsChanged += (s, e) => OnPropertyChanged($"{e.PropertyName}Error");
+            ErrorsChanged += (s, e) => RaisePropertyChanged($"{e.PropertyName}Error");
         }
         [Required]
-        public string Login { get => GetValue<string>(); set => SetValue(value); }
+        public string Login { get => _login; set => SetProperty(ref _login, value); }
         [Required]
-        public string Password { get => GetValue<string>(); set => SetValue(value); }
+        public string Password { get => _password; set => SetProperty(ref _password, value); }
 
         public string LoginError => GetSingleError(nameof(Login));
         public string PasswordError => GetSingleError(nameof(Password));

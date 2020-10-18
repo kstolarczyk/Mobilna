@@ -13,7 +13,7 @@ using MvvmCross.Platforms.Android.Views;
 namespace Mobilna
 {
     [Application]
-    public class MainApplication : MvxAndroidApplication<MvxAndroidSetup<App>, App>
+    public class MainApplication : MvxAndroidApplication<MySetup, App>
     {
         public MainApplication(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
         {

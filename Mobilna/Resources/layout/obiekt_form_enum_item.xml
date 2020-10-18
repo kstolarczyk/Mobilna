@@ -1,9 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+<com.google.android.material.textfield.TextInputLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:minWidth="25px"
+  android:minHeight="25px"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="horizontal"
+  android:layout_marginVertical="10dp"
+  style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+  app:MvxBind="Hint TypParametrow.Nazwa">
+  <mobilna.custom.comboview
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-
-</LinearLayout>
+    android:layout_height="wrap_content"
+    android:inputType="none"
+    android:paddingHorizontal="15dp"
+    app:MvxBind="ItemsSource TypParametrow.AkceptowalneWartosci; SelectedObject Wartosc; Text Wartosc; Error WartoscError" />
+</com.google.android.material.textfield.TextInputLayout>

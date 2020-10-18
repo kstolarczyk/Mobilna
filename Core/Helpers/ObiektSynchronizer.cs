@@ -16,22 +16,25 @@ namespace Core.Helpers
     public delegate void GlobalEvent();
 
     public delegate void GlobalEvent<in T>(T parameter);
+
     public class ObiektSynchronizer
     {
         public static bool IsSynchronizing { get; private set; }
-        private static readonly object Mutex = new object();
+        public static readonly object Mutex = new object();
+
         public static async Task SynchronizeObiekty()
         {
             lock (Mutex)
             {
-                if(IsSynchronizing)
+                if (IsSynchronizing)
                 {
                     return;
                 }
+
                 IsSynchronizing = true;
                 SynchronizingChanged?.Invoke();
             }
-            
+
             try
             {
                 await using var context = new MyDbContext();
@@ -63,13 +66,13 @@ namespace Core.Helpers
             }
         }
 
-        private static async Task UsunObiektyAsync(MyDbContext context, WebService webService, IAsyncEnumerable<Obiekt> obiektyUsun)
+        private static async Task UsunObiektyAsync(MyDbContext context, WebService webService,
+            IAsyncEnumerable<Obiekt> obiektyUsun)
         {
             await foreach (var obiekt in webService.SendDeleteObiektyAsync(obiektyUsun).ConfigureAwait(false))
             {
                 context.Obiekty.Remove(obiekt);
             }
-
         }
 
         private static async Task EdytujObiektyAsync(WebService webService, IAsyncEnumerable<Obiekt> obiektyEdytuj)
@@ -80,7 +83,9 @@ namespace Core.Helpers
             {
                 obiekt.Status = 0;
                 if (obiekt.ZdjecieLokal == obiekt.Zdjecie) continue;
-                if (!string.IsNullOrEmpty(obiekt.ZdjecieLokal) && !await sftp.SendFileAsync(Path.Combine(localDir, obiekt.ZdjecieLokal), obiekt.ZdjecieLokal).ConfigureAwait(false))
+                if (!string.IsNullOrEmpty(obiekt.ZdjecieLokal) && !await sftp
+                    .SendFileAsync(Path.Combine(localDir, obiekt.ZdjecieLokal), obiekt.ZdjecieLokal)
+                    .ConfigureAwait(false))
                 {
                     obiekt.Status = 2;
                 }
@@ -89,7 +94,6 @@ namespace Core.Helpers
                     obiekt.Zdjecie = obiekt.ZdjecieLokal;
                 }
             }
-
         }
 
         private static async Task DodajObiektyAsync(WebService webService, IAsyncEnumerable<Obiekt> obiektyDodaj)
@@ -99,12 +103,13 @@ namespace Core.Helpers
             await foreach (var obiekt in webService.SendNewObiektyAsync(obiektyDodaj).ConfigureAwait(false))
             {
                 obiekt.Status = 0;
-                if (!string.IsNullOrEmpty(obiekt.ZdjecieLokal) && !await sftp.SendFileAsync(Path.Combine(localDir, obiekt.ZdjecieLokal), obiekt.ZdjecieLokal).ConfigureAwait(false))
+                if (!string.IsNullOrEmpty(obiekt.ZdjecieLokal) && !await sftp
+                    .SendFileAsync(Path.Combine(localDir, obiekt.ZdjecieLokal), obiekt.ZdjecieLokal)
+                    .ConfigureAwait(false))
                 {
                     obiekt.Status = 2;
                 }
             }
-
         }
 
         private static async Task GetChanges(MyDbContext context, WebService webService)
@@ -112,18 +117,45 @@ namespace Core.Helpers
             var lastUpdate = await context.Obiekty.AsNoTracking().OrderByDescending(o => o.OstatniaAktualizacja)
                 .Select(o => o.OstatniaAktualizacja).FirstOrDefaultAsync().ConfigureAwait(false);
             var obiekty = await
-                webService.GetObiektyAsync(lastUpdate, context.GrupyObiektow.AsNoTracking().Select(g => g.GrupaObiektowId)).ConfigureAwait(false);
+                webService.GetObiektyAsync(lastUpdate,
+                    context.GrupyObiektow.AsNoTracking().Select(g => g.GrupaObiektowId)).ConfigureAwait(false);
             if (obiekty.Count <= 0) return;
+            if (!await CzySpojne(obiekty, context).ConfigureAwait(false))
+            {
+                await context.ClearExceptUserAsync().ConfigureAwait(false);
+                await GrupaSynchronizer.SynchronizeGrupy().ConfigureAwait(false);
+                context = new MyDbContext();
+                obiekty = await webService
+                    .GetObiektyAsync(null, context.GrupyObiektow.AsNoTracking().Select(g => g.GrupaObiektowId))
+                    .ConfigureAwait(false);
+            }
             await UpdateLocalDb(obiekty, context).ConfigureAwait(false);
             if (context.ChangeTracker.HasChanges())
             {
                 await context.SaveChangesAsync().ConfigureAwait(false);
             }
+
+            await context.DisposeAsync().ConfigureAwait(false);
+        }
+
+        private static async Task<bool> CzySpojne(List<Obiekt> obiekty, MyDbContext context)
+        {
+            var remoteGrupyIds = obiekty.Select(o => o.GrupaObiektowId).Distinct().ToList();
+            var localGrupy = await context.GrupyObiektow.AsNoTracking()
+                .Where(g => remoteGrupyIds.Contains(g.GrupaObiektowId)).Include(g => g.TypyParametrow)
+                .ToListAsync().ConfigureAwait(false);
+            if (localGrupy.Count != remoteGrupyIds.Count) return false;
+            var grupyParametryMap = localGrupy.ToDictionary(g => g.GrupaObiektowId,
+                g => g.TypyParametrow.Select(t => t.TypParametrowId).ToList());
+            return !obiekty.AsParallel().Any(o =>
+                o.Parametry.Count != grupyParametryMap[o.GrupaObiektowId].Count || o.Parametry.Any(p =>
+                    !grupyParametryMap[o.GrupaObiektowId].Contains(p.TypParametrowId)));
         }
 
         private static async Task UpdateLocalDb(List<Obiekt> obiekty, MyDbContext context)
         {
-            var map = await context.Obiekty.AsNoTracking().Where(o => o.RemoteId != null).ToDictionaryAsync(o => o.RemoteId, o => o.ObiektId).ConfigureAwait(false);
+            var map = await context.Obiekty.AsNoTracking().Where(o => o.RemoteId != null)
+                .ToDictionaryAsync(o => o.RemoteId, o => o.ObiektId).ConfigureAwait(false);
             obiekty.ForEach(o => o.ObiektId = map.ContainsKey(o.RemoteId!) ? map[o.RemoteId] : default);
             var nieUsuwane = obiekty.Where(o => !o.Usuniety).ToList();
             var usunieteId = obiekty.Where(o => o.Usuniety).Select(o => o.RemoteId).ToArray();
@@ -137,7 +169,8 @@ namespace Core.Helpers
 
             if (nieUsuwane.Count <= 0) return;
 
-            await UpdateObiekty(sftpService, context, nieUsuwane.Where(o => o.ObiektId != default)).ConfigureAwait(false);
+            await UpdateObiekty(sftpService, context, nieUsuwane.Where(o => o.ObiektId != default))
+                .ConfigureAwait(false);
             await AddObiekty(sftpService, context, nieUsuwane.Where(o => o.ObiektId == default)).ConfigureAwait(false);
         }
 
@@ -145,7 +178,6 @@ namespace Core.Helpers
         {
             var user = await context.Users.AsNoTracking().FirstAsync().ConfigureAwait(false);
             var list = obiekty.ToList();
-            var hashAlgoritm = HashAlgorithm.Create();
             var localFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             foreach (var obiekt in list)
             {
@@ -155,27 +187,21 @@ namespace Core.Helpers
                     context.Add(obiekt);
                     continue;
                 }
-                var ext = obiekt.Zdjecie.Substring(obiekt.Zdjecie.LastIndexOf('.'));
-                var hashBytes =
-                    hashAlgoritm.ComputeHash(Encoding.ASCII.GetBytes($"{user.Username}{Guid.NewGuid():N}"));
-                var localName = hashBytes.Aggregate(new StringBuilder(), (builder, hb) => builder.Append(hb.ToString("X"))).ToString();
-                var localImg = $"{localName}{ext}";
-                using var outputStream = File.OpenWrite(Path.Combine(localFolder, localImg));
-                if (await sftpService.DownloadFileAsync(obiekt.Zdjecie, outputStream).ConfigureAwait(false))
+
+                using var outStream = new FileStream(Path.Combine(localFolder, obiekt.Zdjecie), FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
+                if (await sftpService.DownloadFileAsync(obiekt.Zdjecie, outStream).ConfigureAwait(false))
                 {
-                    obiekt.ZdjecieLokal = localImg;
-                    obiekt.Zdjecie = localImg;
+                    obiekt.ZdjecieLokal = obiekt.Zdjecie;
                 }
+
                 context.Add(obiekt);
             }
-
         }
 
-        private static async Task UpdateObiekty(SftpService sftpService, MyDbContext context, IEnumerable<Obiekt> obiekty)
+        private static async Task UpdateObiekty(SftpService sftpService, MyDbContext context,
+            IEnumerable<Obiekt> obiekty)
         {
-            var user = await context.Users.AsNoTracking().FirstAsync().ConfigureAwait(false);
             var list = obiekty.ToList();
-            var hashAlgoritm = HashAlgorithm.Create();
             var localFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             foreach (var obiekt in list)
             {
@@ -187,22 +213,18 @@ namespace Core.Helpers
                     entity.Update(obiekt);
                     continue;
                 }
-                var ext = obiekt.Zdjecie.Substring(obiekt.Zdjecie.LastIndexOf('.'));
-                var hashBytes =
-                    hashAlgoritm.ComputeHash(Encoding.ASCII.GetBytes($"{user.Username}{Guid.NewGuid():N}"));
-                var localName = hashBytes.Aggregate(new StringBuilder(), (builder, hb) => builder.Append(hb.ToString("X"))).ToString();
-                var localImg = $"{localName}{ext}";
-                using var outputStream = File.OpenWrite(Path.Combine(localFolder, localImg));
+
                 if (!string.IsNullOrEmpty(obiekt.ZdjecieLokal) &&
                     File.Exists(Path.Combine(localFolder, obiekt.ZdjecieLokal)))
                 {
                     File.Delete(Path.Combine(localFolder, obiekt.ZdjecieLokal));
                 }
-                if (await sftpService.DownloadFileAsync(obiekt.Zdjecie, outputStream).ConfigureAwait(false))
+                using var outStream = new FileStream(Path.Combine(localFolder, obiekt.Zdjecie), FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
+                if (await sftpService.DownloadFileAsync(obiekt.Zdjecie, outStream).ConfigureAwait(false))
                 {
-                    obiekt.ZdjecieLokal = localImg;
-                    obiekt.Zdjecie = localImg;
+                    obiekt.ZdjecieLokal = obiekt.Zdjecie;
                 }
+
                 entity.Update(obiekt);
             }
         }
@@ -217,6 +239,7 @@ namespace Core.Helpers
                 {
                     File.Delete(imgPath);
                 }
+
                 context.Obiekty.Remove(obiekt);
             }
         }

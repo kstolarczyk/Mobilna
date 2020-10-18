@@ -13,7 +13,7 @@ using Path = System.IO.Path;
 
 namespace Mobilna.Views
 {
-    [Activity(MainLauncher = true, Label = "Szczegóły")]
+    [Activity(Label = "Szczegóły")]
     public class ObiektDetailsView : MvxActivity<ObiektDetailsViewModel>
     {
         private string _imagePath;

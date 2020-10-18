@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using Core.Utility.Model;
 
 namespace Core.Models
 {
     public class Obiekt : ValidateBase, IEquatable<Obiekt>
     {
+        private string _nazwa;
+        private string _symbol;
+        private decimal _latitude;
+        private decimal _longitude;
+        private GrupaObiektow _grupaObiektow;
+
         public Obiekt()
         {
             OstatniaAktualizacja ??= DateTime.Now;
@@ -15,16 +23,47 @@ namespace Core.Models
 
         public int ObiektId { get; set; }
         public int? RemoteId { get; set; }
-        public string Symbol { get; set; }
-        public string Nazwa { get; set; }
+
+        [Required]
+        public string Symbol
+        {
+            get => _symbol;
+            set => SetProperty(ref _symbol, value);
+        }
+
+        [Required]
+        public string Nazwa
+        {
+            get => _nazwa;
+            set => SetProperty(ref _nazwa, value);
+        }
+
         public int GrupaObiektowId { get; set; }
-        public decimal Latitude { get; set; }
-        public decimal Longitude { get; set; }
+
+        public decimal Latitude
+        {
+            get => _latitude;
+            set => SetProperty(ref _latitude, value);
+        }
+
+        public decimal Longitude
+        {
+            get => _longitude;
+            set => SetProperty(ref _longitude, value);
+        }
+
         public int Status { get; set; } // 1 - Added, 2 - Modified, 3 - Deleted, 0 - none
         public int? UserId { get; set; }
         public User User { get; set; }
         public string Zdjecie { get; set; }
-        public GrupaObiektow GrupaObiektow { get; set; }
+
+        [Required]
+        public GrupaObiektow GrupaObiektow
+        {
+            get => _grupaObiektow;
+            set => SetProperty(ref _grupaObiektow, value);
+        }
+
         public DateTime? OstatniaAktualizacja { get; set; }
         public bool Usuniety { get; set; }
         public List<Parametr> Parametry { get; set; } = new List<Parametr>();
@@ -35,11 +74,13 @@ namespace Core.Models
         [NotMapped] public string LokalizacjaOneLine => FormattedCoords("; ");
         [NotMapped] public string LokalizacjaMultiLine => FormattedCoords(Environment.NewLine);
 
+        [NotMapped] public string NazwaError => GetSingleError(nameof(Nazwa));
+        [NotMapped] public string SymbolError => GetSingleError(nameof(Symbol));
+        [NotMapped] public string GrupaObiektowError => GetSingleError(nameof(GrupaObiektow));
         public void Update(Obiekt other)
         {
             Nazwa = other.Nazwa;
             Symbol = other.Symbol;
-            ZdjecieLokal = other.ZdjecieLokal;
             Zdjecie = other.Zdjecie;
             Latitude = other.Latitude;
             Longitude = other.Longitude;
@@ -47,9 +88,16 @@ namespace Core.Models
             foreach (var parametr in other.Parametry)
             {
                 var toUpdate = Parametry.Find(p => p.TypParametrowId == parametr.TypParametrowId);
-                toUpdate.Update(parametr);
+                toUpdate?.Update(parametr);
             }
         }
+
+        public new void ValidateEntity()
+        {
+            base.ValidateEntity();
+            Parametry.AsParallel().ForAll(p => p.ValidateEntity());
+        }
+
         public bool Equals(Obiekt other)
         {
             return other != null && other.RemoteId == RemoteId;

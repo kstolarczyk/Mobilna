@@ -2,6 +2,8 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Transactions;
+using Acr.UserDialogs;
+using MvvmCross;
 using Renci.SshNet;
 
 namespace Core.Services
@@ -34,9 +36,9 @@ namespace Core.Services
                     .FromAsync(_client.BeginDownloadFile(remotePath, destination), _client.EndDownloadFile)
                     .ConfigureAwait(false);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                Mvx.IoCProvider.Resolve<IUserDialogs>().Toast(e.Message, TimeSpan.FromSeconds(3));
             }
 
             return true;
@@ -52,11 +54,12 @@ namespace Core.Services
             try
             {
                 if (!File.Exists(localPath)) return false;
-                await Task.Factory.FromAsync(_client.BeginUploadFile(File.OpenRead(localPath), Path.Combine(RemoteDir, fileName)), _client.EndDownloadFile).ConfigureAwait(false);
+                using var inputStream = new FileStream(localPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                await Task.Factory.FromAsync(_client.BeginUploadFile(inputStream, Path.Combine(RemoteDir, fileName)), _client.EndUploadFile).ConfigureAwait(false);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                Mvx.IoCProvider.Resolve<IUserDialogs>().Toast(e.Message, TimeSpan.FromSeconds(3));
             }
 
             return true;

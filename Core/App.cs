@@ -25,7 +25,7 @@ namespace Core
             CreatableTypes().InNamespace("Core.Repositories").AsInterfaces().RegisterAsDynamic();
             CreatableTypes().InNamespace("Core.Services").AsInterfaces().RegisterAsLazySingleton();
             Mvx.IoCProvider.RegisterType<MyDbContext>();
-            Mvx.IoCProvider.RegisterType(() => UserDialogs.Instance);
+            // Mvx.IoCProvider.RegisterType(() => UserDialogs.Instance);
             var context = Mvx.IoCProvider.Resolve<MyDbContext>();
             lock (Mutex)
             {
@@ -35,7 +35,7 @@ namespace Core
             if (context.Users.Any())
             {
                 LoggedIn = true;
-                RegisterAppStart<ObiektyFormViewModel>();
+                RegisterAppStart<ObiektyViewModel>();
             }
             else
             {

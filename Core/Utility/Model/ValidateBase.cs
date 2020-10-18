@@ -5,38 +5,45 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+using MvvmCross.ViewModels;
 
 namespace Core.Utility.Model
 {
-    public class ValidateBase : BindableBase, INotifyDataErrorInfo
+    public class ValidateBase : MvxNotifyPropertyChanged, INotifyDataErrorInfo
     {
         private readonly Dictionary<string, List<string>> _errorsByProperty = new Dictionary<string, List<string>>();
+        private readonly List<PropertyInfo> _properties;
         public ValidateBase()
         {
+            _properties = GetType()
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly).ToList();
+        }
+
+        protected override bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+        {
+            var result = base.SetProperty(ref storage, value, propertyName);
+            ValidateProperty(propertyName, value);
+            RaisePropertyChanged($"{propertyName}Error");
+            return result;
         }
 
         public void ValidateEntity()
         {
-            foreach (var property in Properties)
+            foreach (var property in _properties)
             {
-                ValidateProperty(property.Key, property.Value);
+                ValidateProperty(property.Name, property.GetValue(this));
             }
         }
         IEnumerable INotifyDataErrorInfo.GetErrors(string propertyName) => GetErrors(propertyName);
         public IEnumerable<string> GetErrors(string propertyName)
         {
-            return _errorsByProperty[propertyName] ?? Enumerable.Empty<string>();
+            return _errorsByProperty.ContainsKey(propertyName) ? _errorsByProperty[propertyName] : Enumerable.Empty<string>();
         }
 
         public string GetSingleError(string propertyName)
         {
-            return _errorsByProperty[propertyName]?.FirstOrDefault();
-        }
-
-        protected override void SetValue<T>(T value, [CallerMemberName] string propertyName = "")
-        {
-            base.SetValue(value, propertyName);
-            ValidateProperty(propertyName, value);
+            return GetErrors(propertyName).FirstOrDefault();
         }
 
         private void ValidateProperty<T>(string propertyName, T value)

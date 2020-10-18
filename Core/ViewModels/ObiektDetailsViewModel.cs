@@ -24,7 +24,13 @@ namespace Core.ViewModels
             _navigationService = navigationService;
             ShowMapCommand = new MvxAsyncCommand(ShowMap);
             DeleteObiektCommand = new MvxAsyncCommand(DeleteObiekt, CanDelete);
+            EdytujObiektCommand = new MvxAsyncCommand(EdytujObiekt, CanEdytuj);
             ShowImageCommand = new MvxCommand( () => _popupImageInteraction.Raise(Obiekt.ZdjecieLokal), CanShowImage);
+        }
+
+        private async Task EdytujObiekt()
+        {
+            await _navigationService.Navigate<ObiektFormViewModel, int?>(Obiekt.ObiektId);
         }
 
         private bool CanShowImage()
@@ -33,6 +39,11 @@ namespace Core.ViewModels
         }
 
         private bool CanDelete()
+        {
+            return Obiekt?.UserId != null;
+        }
+
+        private bool CanEdytuj()
         {
             return Obiekt?.UserId != null;
         }
@@ -65,6 +76,7 @@ namespace Core.ViewModels
         public Obiekt Obiekt { get => _obiekt; set => SetProperty(ref _obiekt, value); }
         public IMvxAsyncCommand ShowMapCommand { get; set; }
         public IMvxAsyncCommand DeleteObiektCommand { get; set; }
+        public IMvxAsyncCommand EdytujObiektCommand { get; set; }
         public IMvxCommand ShowImageCommand { get; set; }
         public IMvxInteraction<string> PopupImageInteraction => _popupImageInteraction;
     }

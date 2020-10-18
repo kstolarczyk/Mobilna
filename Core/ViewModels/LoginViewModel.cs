@@ -39,7 +39,7 @@ namespace Core.ViewModels
                 _repository.Insert(user);
                 await _repository.SaveAsync();
                 App.LoggedIn = true;
-                await _navigationService.Navigate<ObiektyFormViewModel>();
+                await _navigationService.Navigate<ObiektyViewModel>();
             }
             catch(ApiLoginException e)
             {

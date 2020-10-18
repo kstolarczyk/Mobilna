@@ -15,7 +15,7 @@ using MvvmCross.Platforms.Android.Views.Base;
 
 namespace Mobilna.Views
 {
-    [Activity(Label = "@string/obiekty_title", MainLauncher = true)]
+    [Activity(Label = "@string/obiekty_title")]
     public class LoginView : MvxActivity<LoginViewModel>
     {
         protected override void OnCreate(Bundle bundle)

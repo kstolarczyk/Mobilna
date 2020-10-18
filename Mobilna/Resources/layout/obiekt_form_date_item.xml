@@ -1,23 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <TextView
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minWidth="25px"
-        android:minHeight="25px"
-        app:MvxBind="Text TypParametrow.Nazwa" />
-    <EditText
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minWidth="25px"
-            android:minHeight="25px"
-            app:MvxBind="Text Wartosc"
-            android:inputType="date" />
 
-</LinearLayout>
+<com.google.android.material.textfield.TextInputLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:minWidth="25px"
+  android:minHeight="25px"
+  app:errorEnabled="true"
+  app:MvxBind="Hint TypParametrow.Nazwa"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:id="@+id/textInputLayout2">
+  <com.google.android.material.textfield.TextInputEditText
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:inputType="date"
+    app:MvxBind="Text Wartosc; Error WartoscError"
+    android:id="@+id/textInputEditText2" />
+</com.google.android.material.textfield.TextInputLayout>
