@@ -74,6 +74,7 @@
     <Compile Include="Converters\IsConnectedColorConverter.cs" />
     <Compile Include="Converters\IsConnectedConverter.cs" />
     <Compile Include="Converters\IsConnectedDrawableConverter.cs" />
+    <Compile Include="ItemTemplateSelector\TypParametruTemplateSelector.cs" />
     <Compile Include="MainApplication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Views\LoginView.cs" />
     <Compile Include="Views\MapView.cs" />
     <Compile Include="Views\ObiektDetailsView.cs" />
+    <Compile Include="Views\ObiektyFormView.cs" />
     <Compile Include="Views\ObiektyView.cs" />
     <Compile Include="Workers\BaseWorker.cs" />
     <Compile Include="Workers\GrupySyncWorker.cs" />
@@ -368,7 +370,31 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\ic_zoom_in_black_36dp.xml" />
+    <AndroidResource Include="Resources\layout\obiekt_form.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekt_form_date_item.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekt_form_datetime_item.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekt_form_enum_item.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekt_form_float_item.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekt_form_int_item.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekt_form_select_item.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekt_form_text_item.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekt_form_time_item.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

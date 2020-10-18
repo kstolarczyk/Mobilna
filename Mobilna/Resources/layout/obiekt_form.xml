@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<mvvmcross.droidx.MvxSwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    app:MvxBind="Refreshing IsBusy; RefreshCommand RefreshCommand"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout 
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <TextView
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:text="Nazwa"
+        android:id="@+id/textView1" />
+    <EditText
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        app:MvxBind="Text NazwaEdit"
+        android:id="@+id/nazwa_edit"
+        android:inputType="text" />
+    <TextView
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:text="Symbol"
+        android:id="@+id/textView2" />
+    <EditText
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        app:MvxBind="Text SymbolEdit"
+        android:id="@+id/symbol_edit"
+        android:inputType="text" />
+    <Button
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:id="@+id/btnCamera"
+        android:text="Wybierz zdjęcie"  />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"/>
+
+    <MvvmCross.Platforms.Android.Binding.Views.MvxSpinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dialog"
+            android:prompt="@string/spinner_name"    
+            app:MvxBind="ItemsSource GrupaObiektow; SelectedItem GrupaObiektowSelectedItem"
+            app:MvxDropDownItemTemplate="@layout/obiekt_form_select_item" />
+
+    <MvvmCross.Droid.Support.V7.RecyclerView.MvxRecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:MvxBind="ItemsSource Parametry"             
+            app:MvxTemplateSelector="Mobilna.ItemTemplateSelector.TypParametruTemplateSelector, Mobilna" />
+
+    <Button
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:id="@+id/submit_button"
+        android:text="Dodaj"  />
+
+
+</LinearLayout>
+      
+</mvvmcross.droidx.MvxSwipeRefreshLayout>

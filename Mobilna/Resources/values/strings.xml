@@ -7,4 +7,8 @@
     <string name="edytuj">Edytuj</string>
     <string name="usun">Usuń</string>
     <string name="szczegoly">Szczegóły</string>
+    <string name=" spinner_name">Wybierz Grupę Obiektów</string>
+    <string name=" spinner_name_enum">Wybierz parametr</string>
+    <string name="form_title">Dodaj obiekt</string>
+    <string name="grupa_label">Wybierz Grupę</string>
 </resources>
