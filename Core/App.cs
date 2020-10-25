@@ -50,7 +50,6 @@ namespace Core
             {
                 // await context.Database.EnsureDeletedAsync(); // delete database
                 await context.Database.MigrateAsync().ConfigureAwait(false);
-                // await DodajObiektTestowy(context).ConfigureAwait(false);
             }
             catch (Exception e)
             {

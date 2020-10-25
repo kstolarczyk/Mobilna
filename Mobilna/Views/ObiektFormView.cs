@@ -1,13 +1,25 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Acr.UserDialogs;
 using Android.App;
 using Android.Content;
+using Android.Content.PM;
+using Android.Graphics;
+using Android.Media;
 using Android.OS;
+using Android.Provider;
 using Android.Runtime;
 using Android.Widget;
 using Core.ViewModels;
+using Java.Nio;
 using MvvmCross.Platforms.Android.Views;
-
+using MvvmCross.Platforms.Android.Views.Base;
+using MvvmCross.Plugin.PictureChooser;
+using MvvmCross.Plugin.PictureChooser.Platforms.Android;
+using Xamarin.Essentials;
+using Orientation = Android.Media.Orientation;
+using Path = Android.Graphics.Path;
+using Stream = System.IO.Stream;
 
 
 namespace Mobilna.Views
@@ -15,35 +27,23 @@ namespace Mobilna.Views
     [Activity(Label = "@string/form_title")]
     public class ObiektFormView : MvxActivity<ObiektFormViewModel>
     {
-        ImageView imageView;
         internal static ObiektFormView Instance { get; private set; }
-        internal static int PickImageId = 1;
-        public TaskCompletionSource<byte[]> PickImageTask { get; set; }
-
         protected override void OnCreate(Bundle bundle) {  
             Instance = this;
-            base.OnCreate(bundle);           
+            base.OnCreate(bundle);
             SetContentView(Resource.Layout.obiekt_form);
-            imageView = FindViewById<ImageView>(Resource.Id.imageView);
+            Platform.Init(this, bundle);
         }
 
 
         protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent intent) {  
             base.OnActivityResult(requestCode, resultCode, intent);
-            if (requestCode == PickImageId && resultCode == Result.Ok && intent != null)
-            {
-                var uri = intent.Data;
-                imageView.SetImageURI(uri);
-                var stream = ContentResolver?.OpenInputStream(uri!);
-                if (stream == null) return;
-                var buffer = new byte[stream.Length];
-                stream.Read(buffer, 0, (int)stream.Length);
-                PickImageTask.SetResult(buffer);
-            }
-            else
-            {
-                PickImageTask.SetResult(null);
-            }
+        }
+
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+        {
+            Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     } 
 

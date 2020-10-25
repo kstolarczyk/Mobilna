@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -7,12 +8,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Acr.UserDialogs;
 using Core.Interfaces;
+using Core.Messages;
 using Core.Models;
 using Core.Repositories;
+using Core.Services;
 using Core.Utility.ViewModel;
 using MvvmCross;
 using MvvmCross.Commands;
 using MvvmCross.Navigation;
+using MvvmCross.Plugin.Location;
+using MvvmCross.Plugin.Messenger;
 using MvvmCross.ViewModels;
 
 namespace Core.ViewModels
@@ -22,43 +27,109 @@ namespace Core.ViewModels
         private readonly IObiektRepository _repository;
         private readonly IGrupaObiektowRepository _grupaRepository;
         private readonly IMvxNavigationService _navigationService;
+        private readonly IUserDialogs _userDialogs;
         private GrupaObiektow _selectedGrupa;
-        private readonly IPickImageService _pickImageService;
+        private readonly ILocationService _locationService;
+        private readonly IPictureService _pictureService;
+        private readonly IMvxMessenger _messenger;
         private Obiekt _obiekt;
         private int? _obiektId;
         private byte[] _imageBytes;
 
 
-        public ObiektFormViewModel(IObiektRepository repository, IGrupaObiektowRepository grupaObiektowRepository, IMvxNavigationService navigationService, IPickImageService pickImageService)
+        public ObiektFormViewModel(IObiektRepository repository, IGrupaObiektowRepository grupaObiektowRepository, 
+            IMvxNavigationService navigationService, IUserDialogs userDialogs,
+            ILocationService locationService, IPictureService pictureService,
+            IMvxMessenger messenger)
         {
             _repository = repository;
             _grupaRepository = grupaObiektowRepository;
             _navigationService = navigationService;
-            _pickImageService = pickImageService;
+            _userDialogs = userDialogs;
+            _locationService = locationService;
+            _pictureService = pictureService;
+            _messenger = messenger;
             SaveCommand = new MvxAsyncCommand(Save, () => CanSave);
-            PickImageCommand = new MvxAsyncCommand(PickImage);
+            PickImageCommand = new MvxAsyncCommand(ChooseImage);
+            GetCoordsCommand = new MvxAsyncCommand(GetCoords);
         }
+
+        private Task ChooseImage()
+        {
+            Mvx.IoCProvider.Resolve<IUserDialogs>().ActionSheet(new ActionSheetConfig()
+            {
+                Options = new List<ActionSheetOption>()
+                {
+                    new ActionSheetOption("Zrób zdjęcie", async () => await TakePhoto()),
+                    new ActionSheetOption("Wybierz z galerii", async () => await PickImage())
+                }
+            });
+            return Task.CompletedTask;
+        }
+
+        private Task GetCoords()
+        {
+            Mvx.IoCProvider.Resolve<IUserDialogs>().ActionSheet(new ActionSheetConfig()
+            {
+                Options = new List<ActionSheetOption>()
+                {
+                    new ActionSheetOption("Użyj twojej lokalizacji", GetCurrentLocation),
+                    new ActionSheetOption("Ustaw punkt na mapie", SetPointOnMap)
+                }
+            });
+            return Task.CompletedTask;
+        }
+
+        private async Task TakePhoto()
+        {
+            ImageBytes = await _pictureService.TakePictureAsync();
+        }
+
+        private void SetPointOnMap()
+        {
+            throw new NotImplementedException();
+        }
+
+        private async void GetCurrentLocation()
+        {
+            IsGettingCoords = true;
+            try
+            {
+                var (latitude, longitude) = await _locationService.GetLocation();
+                Obiekt.Latitude = (decimal) latitude;
+                Obiekt.Longitude = (decimal) longitude;
+            }
+            catch (Exception e)
+            {
+                _userDialogs.Toast(e.Message, TimeSpan.FromSeconds(3));
+            }
+            IsGettingCoords = false;
+        }
+
 
         private async Task PickImage()
         {
-            _imageBytes = await _pickImageService.GetImageStreamAsync();
+            ImageBytes = await _pictureService.ChoosePictureAsync();
         }
 
 
         private async Task Save()
         {
+            _userDialogs.ShowLoading("Zapisywanie...");
             Obiekt.GrupaObiektow = SelectedGrupa;
             Obiekt.Parametry = Parametry.ToList();
             try
             {
                 Obiekt.ZdjecieLokal = await SaveImageLocally();
                 await (IsNew ? _repository.InsertInstantlyAsync(Obiekt) : _repository.UpdateInstantlyAsync(Obiekt));
+                _messenger.Publish(new ToastMessage(this, "Obiekt pomyślnie zapisany!", TimeSpan.FromSeconds(3)));
+                _messenger.Publish(new ObiektSavedMessage(this, Obiekt));
+                _userDialogs.HideLoading();
                 await _navigationService.Close(this);
-                Mvx.IoCProvider.Resolve<IUserDialogs>().Toast("Obiekt pomyślnie zapisany!", TimeSpan.FromSeconds(3));
             }
             catch(Exception e)
             {
-                Mvx.IoCProvider.Resolve<IUserDialogs>().Toast(e.Message, TimeSpan.FromSeconds(3));
+                _userDialogs.Toast(e.Message, TimeSpan.FromSeconds(3));
             }
         }
 
@@ -88,11 +159,26 @@ namespace Core.ViewModels
         {
             GrupyObiektow.AddRange(await _grupaRepository.GetAllAsync());
             Obiekt = await _repository.GetOrCreateAsync(_obiektId);
+            ImageBytes = await ReadImageAsync(Obiekt.ZdjecieLokal);
             Obiekt.ErrorsChanged += ErrorsChanged;
             SelectedGrupa = Obiekt.GrupaObiektow;
             Parametry.AddRange(Obiekt.Parametry);
             Parametry.AsParallel().ForAll(p => p.ErrorsChanged += ErrorsChanged);
             Obiekt.ValidateEntity();
+        }
+
+        private async Task<byte[]> ReadImageAsync(string zdjecie)
+        {
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), zdjecie);
+            if (string.IsNullOrEmpty(zdjecie) || !File.Exists(path))
+            {
+                return default;
+            }
+
+            using var stream = File.OpenRead(path);
+            var bytes = new byte[stream.Length];
+            await stream.ReadAsync(bytes, 0, (int) stream.Length);
+            return bytes;
         }
 
         public override void Prepare(int? obiektId)
@@ -115,6 +201,9 @@ namespace Core.ViewModels
             Parametry.AsParallel().ForAll(p => p.ValidateEntity());
         }
 
+        private bool _isGettingCoords;
+        public byte[] ImageBytes { get => _imageBytes; set => SetProperty(ref _imageBytes, value); }
+        public bool IsGettingCoords { get => _isGettingCoords; set => SetProperty(ref _isGettingCoords, value); }
         public bool IsNew => _obiektId == null;
         public Obiekt Obiekt { get => _obiekt; set => SetProperty(ref _obiekt, value); }
         public GrupaObiektow SelectedGrupa { get => _selectedGrupa; set => SetProperty(ref _selectedGrupa, value, LoadParametry); }
@@ -123,5 +212,6 @@ namespace Core.ViewModels
         public MvxObservableCollection<Parametr> Parametry { get; } = new MvxObservableCollection<Parametr>();
         public MvxObservableCollection<GrupaObiektow> GrupyObiektow { get; } = new MvxObservableCollection<GrupaObiektow>();
         public IMvxAsyncCommand PickImageCommand { get; set; }
+        public IMvxAsyncCommand GetCoordsCommand { get; set; }
     }
 }

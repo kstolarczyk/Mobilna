@@ -2,9 +2,11 @@
 using Core;
 using Core.Interfaces;
 using Core.Models;
+using Core.Services;
 using Mobilna.Services;
 using MvvmCross;
 using MvvmCross.Platforms.Android.Core;
+using LocationService = Mobilna.Services.LocationService;
 
 namespace Mobilna
 {
@@ -13,8 +15,9 @@ namespace Mobilna
         protected override void InitializeLastChance()
         {
             base.InitializeLastChance();
-            Mvx.IoCProvider.RegisterType<IPickImageService>(() => new PhotoPickerService());
             Mvx.IoCProvider.RegisterType(() => UserDialogs.Instance);
+            Mvx.IoCProvider.RegisterType<ILocationService>(() => new LocationService());
+            Mvx.IoCProvider.RegisterType<IPictureService>(() => Mvx.IoCProvider.IoCConstruct<PictureService>());
         }
     }
 }

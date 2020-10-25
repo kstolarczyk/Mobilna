@@ -10,10 +10,9 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:id="@+id/textInputLayout2">
-  <com.google.android.material.textfield.TextInputEditText
+  <mobilna.custom.datetimepicker
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:inputType="datetime"
     app:MvxBind="Text Wartosc; Error WartoscError"
-    android:id="@+id/textInputEditText2" />
+     />
 </com.google.android.material.textfield.TextInputLayout>

@@ -3,14 +3,18 @@ using Core.Utility.ViewModel;
 
 namespace Core.ViewModels
 {
-    public class MapViewModel : BaseViewModel
+    public class MapViewModel : BaseViewModel<Obiekt>
     {
-        private Obiekt _obiekt;
-        public MapViewModel(Obiekt obiekt)
+        public MapViewModel()
         {
-            _obiekt = obiekt;
         }
 
+        public override void Prepare(Obiekt parameter)
+        {
+            Obiekt = parameter;
+        }
+
+        private Obiekt _obiekt;
         public Obiekt Obiekt
         {
             get => _obiekt;

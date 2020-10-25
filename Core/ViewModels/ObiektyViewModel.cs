@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Timers;
@@ -6,14 +7,17 @@ using Acr.UserDialogs;
 using Core.Extensions;
 using Core.Helpers;
 using Core.Interactions;
+using Core.Messages;
 using Core.Models;
 using Core.Repositories;
 using Core.Services;
 using Core.Utility.Enum;
 using Core.Utility.ViewModel;
+using Microsoft.EntityFrameworkCore.Internal;
 using MvvmCross;
 using MvvmCross.Commands;
 using MvvmCross.Navigation;
+using MvvmCross.Plugin.Messenger;
 using MvvmCross.Plugin.Network.Reachability;
 using MvvmCross.ViewModels;
 
@@ -30,13 +34,15 @@ namespace Core.ViewModels
             new MvxInteraction<ContextMenuInteraction<Obiekt>>();
 
         private readonly IMvxNavigationService _navigation;
+        private readonly IUserDialogs _userDialogs;
 
         public ObiektyViewModel(IObiektRepository repository, IMvxReachability reachability,
-            IMvxNavigationService navigationService)
+            IMvxNavigationService navigationService, IUserDialogs userDialogs, IMvxMessenger messenger)
         {
             _repository = repository;
             _reachability = reachability;
             _navigation = navigationService;
+            _userDialogs = userDialogs;
             var timer = new Timer() {Interval = 5000, AutoReset = true, Enabled = true};
             timer.Elapsed += Elapsed;
             ContextMenuCommand = new MvxAsyncCommand<Obiekt>(async o => _contextMenuInteraction.Raise(
@@ -52,6 +58,44 @@ namespace Core.ViewModels
             GrupaSynchronizer.SynchronizingChanged += NotifySyncChanged;
             ObiektSynchronizer.SynchronizingChanged += NotifySyncChanged;
             ObiektSynchronizer.SynchronizingChanged += async () => await Reload();
+            messenger.Subscribe<ObiektSavedMessage>(OnObiektChanged, MvxReference.Strong);
+            messenger.Subscribe<ObiektDeletedMessage>(OnObiektDeleted, MvxReference.Strong);
+            messenger.Subscribe<ToastMessage>(OnToast, MvxReference.Strong);
+        }
+
+        private void OnToast(ToastMessage msg)
+        {
+            Messages.Add(msg);
+        }
+
+        private void OnObiektDeleted(ObiektDeletedMessage msg)
+        {
+            var index = Obiekty.IndexOf(o => o.ObiektId == msg.Obiekt.ObiektId);
+            if (index < 0) return;
+            Obiekty.RemoveAt(index);
+        }
+
+        private void OnObiektChanged(ObiektSavedMessage msg)
+        {
+            var index = Obiekty.IndexOf(o => o.ObiektId == msg.Obiekt.ObiektId);
+            if (index >= 0)
+            {
+                Obiekty[index] = msg.Obiekt;
+            }
+            else
+            {
+                Obiekty.Add(msg.Obiekt);
+            }
+        }
+
+        public override void ViewAppeared()
+        {
+            base.ViewAppeared();
+            foreach (var msg in Messages)
+            {
+                _userDialogs.Toast(msg.Message, msg.Duration);
+            }
+            Messages.Clear();
         }
 
         private async Task NowyObiekt()
@@ -67,7 +111,7 @@ namespace Core.ViewModels
                     await Details(obiekt);
                     break;
                 case ContextMenuOption.Delete:
-                    if (await Mvx.IoCProvider.Resolve<IUserDialogs>().ConfirmAsync("Czy na pewno chcesz usunąć?",
+                    if (await _userDialogs.ConfirmAsync("Czy na pewno chcesz usunąć?",
                         $"Potwierdź usunięcie {obiekt.Symbol}", "Tak", "Nie"))
                     {
                         DeleteObiekt(obiekt);
@@ -91,6 +135,7 @@ namespace Core.ViewModels
         {
             await _repository.DeleteInstantlyAsync(obiekt);
             Obiekty.Remove(obiekt);
+            _userDialogs.Toast("Pomyślnie usunięto obiekt!", TimeSpan.FromSeconds(3));
         }
 
         public MvxAsyncCommand<Obiekt> ContextMenuCommand { get; set; }
@@ -108,11 +153,11 @@ namespace Core.ViewModels
             try
             {
                 await ObiektSynchronizer.SynchronizeObiekty();
-                await Refresh();
+                await Reload();
             }
             catch (Exception e)
             {
-                Mvx.IoCProvider.Resolve<IUserDialogs>().Toast(e.Message, TimeSpan.FromSeconds(3));
+                _userDialogs.Toast(e.Message, TimeSpan.FromSeconds(3));
             }
         }
 
@@ -125,6 +170,7 @@ namespace Core.ViewModels
         public override async Task Initialize()
         {
             IsConnected = _reachability.IsHostReachable(WebService.ApiBaseUrl);
+            if (IsSynchronizing) return;
             await foreach (var obiekt in _repository.GetAsStream())
             {
                 Obiekty.Add(obiekt);
@@ -173,5 +219,6 @@ namespace Core.ViewModels
         public IMvxAsyncCommand<Obiekt> DetailsCommand { get; set; }
         public IMvxAsyncCommand NowyObiektCommand { get; set; }
         public bool IsSynchronizing => ObiektSynchronizer.IsSynchronizing || GrupaSynchronizer.IsSynchronizing;
+        public List<ToastMessage> Messages { get; set; } = new List<ToastMessage>();
     }
 }

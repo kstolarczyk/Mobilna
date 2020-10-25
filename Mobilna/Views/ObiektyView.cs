@@ -8,6 +8,7 @@ using Core.ViewModels;
 using MvvmCross.Base;
 using MvvmCross.DroidX.RecyclerView;
 using MvvmCross.Platforms.Android.Views;
+using Xamarin.Essentials;
 
 namespace Mobilna.Views
 {
@@ -26,11 +27,11 @@ namespace Mobilna.Views
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
+            // Platform.Init(this, bundle);
             SetContentView(Resource.Layout.obiekty_list);
             _listView = FindViewById<MvxRecyclerView>(Resource.Id.obiekty_recyclerview);
             RegisterForContextMenu(_listView);
             ViewModel.ContextMenuInteraction.Requested += OnInteractionRequested;
-            UserDialogs.Init(this);
         }
 
         public override void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo menuInfo)

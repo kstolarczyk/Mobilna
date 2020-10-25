@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Acr.UserDialogs;
 using Android.App;
 using Android.Runtime;
 using AndroidX.Work;
@@ -9,6 +10,7 @@ using Java.Util.Concurrent;
 using Mobilna.Workers;
 using MvvmCross.Platforms.Android.Core;
 using MvvmCross.Platforms.Android.Views;
+using Xamarin.Essentials;
 
 namespace Mobilna
 {
@@ -22,6 +24,8 @@ namespace Mobilna
         public override async void OnCreate()
         {
             base.OnCreate();
+            Platform.Init(this);
+            UserDialogs.Init(() => Platform.CurrentActivity);
             var startGrupyRequest = OneTimeWorkRequest.Builder.From<GrupySyncWorker>().SetConstraints(new Constraints()
             {
                 RequiredNetworkType = NetworkType.Connected

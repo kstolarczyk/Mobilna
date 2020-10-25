@@ -10,10 +10,15 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:id="@+id/textInputLayout2">
-  <com.google.android.material.textfield.TextInputEditText
-    android:layout_width="match_parent"
+  <mobilna.custom.datepicker
     android:layout_height="wrap_content"
-    android:inputType="date"
-    app:MvxBind="Text Wartosc; Error WartoscError"
-    android:id="@+id/textInputEditText2" />
+    android:layout_width="match_parent"
+    app:MvxBind="Text Wartosc; Error WartoscError">
+    </mobilna.custom.datepicker>
+  <!-- <com.google.android.material.textfield.TextInputEditText -->
+  <!--   android:layout_width="match_parent" -->
+  <!--   android:layout_height="wrap_content" -->
+  <!--   android:inputType="date" -->
+  <!--   app:MvxBind="Text Wartosc; Error WartoscError" -->
+  <!--   android:id="@+id/textInputEditText2" /> -->
 </com.google.android.material.textfield.TextInputLayout>

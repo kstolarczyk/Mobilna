@@ -9,8 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Acr.UserDialogs;
 using Core.Exceptions;
 using Core.Wrappers;
+using MvvmCross;
 using MvvmCross.Navigation;
 
 namespace Core.ViewModels
@@ -33,13 +35,17 @@ namespace Core.ViewModels
 
         public async Task Login()
         {
+            if(App.LoggedIn) await _navigationService.Navigate<ObiektyViewModel>();
+            var dialogService = Mvx.IoCProvider.Resolve<IUserDialogs>();
             try
             {
+                dialogService.ShowLoading("Logowanie...");
                 var user = await _loginService.LoginAsync(LoginModel.Login, LoginModel.Password);
                 _repository.Insert(user);
                 await _repository.SaveAsync();
                 App.LoggedIn = true;
                 await _navigationService.Navigate<ObiektyViewModel>();
+                dialogService.HideLoading();
             }
             catch(ApiLoginException e)
             {

@@ -45,7 +45,7 @@ namespace Mobilna.Views
                 Convert.ToDouble(ViewModel.Obiekt.Longitude));
             var markerOptions = new MarkerOptions()
                 .SetPosition(latlng)
-                .SetTitle("Chuje");
+                .SetTitle(ViewModel.Obiekt.Nazwa);
             var camera = CameraUpdateFactory.NewLatLngZoom(latlng, 15);  
             googleMap.MoveCamera(camera);
             googleMap.AddMarker(markerOptions);
