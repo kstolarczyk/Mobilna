@@ -14,7 +14,7 @@
     android:layout_height="wrap_content"
     android:id="@+id/cardView1">
     <ImageView
-      android:contentDescription="chuj"
+      android:contentDescription="@string/zdjecie_obiektu"
       android:layout_width="70dp"
       android:layout_height="70dp"
       android:id="@+id/imageView1"

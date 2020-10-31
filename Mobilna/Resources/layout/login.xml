@@ -7,7 +7,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
   <TextView
-    android:text="Pierwsze logowanie"
+    android:text="@string/first_login"
     android:textAppearance="?android:attr/textAppearanceLarge"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -38,8 +38,7 @@
         <com.google.android.material.textfield.TextInputEditText
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:hint="Login"
-          android:text="Kurwy jebane"
+          android:hint="@string/login_hint"
           app:MvxBind="Text LoginModel.Login; Error LoginModel.LoginError"
           android:id="@+id/textInputEditText1" />
       </com.google.android.material.textfield.TextInputLayout>
@@ -54,7 +53,7 @@
         <com.google.android.material.textfield.TextInputEditText
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:hint="Password"
+          android:hint="@string/password_hint"
           android:inputType="textPassword"
           app:MvxBind="Text LoginModel.Password; Error LoginModel.PasswordError"
           android:id="@+id/textInputEditText2" />
@@ -69,7 +68,7 @@
         android:padding="10dp"
         android:id="@+id/submit_button"
         android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
-        android:text="Login"
+        android:text="@string/login"
         app:MvxBind="Click SubmitCommand" />
     </LinearLayout>
   </androidx.cardview.widget.CardView>
