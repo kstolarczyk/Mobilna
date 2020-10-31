@@ -9,8 +9,9 @@ namespace Core.Repositories
 {
     public interface IObiektRepository
     {
-        IAsyncEnumerable<Obiekt> GetAsStream();
-        Task<List<Obiekt>> GetAllAsync();
+        IAsyncEnumerable<Obiekt> GetAsStream(int grupaId);
+        Task<List<Obiekt>> GetAllAsync(int grupaId);
+        Task<List<GrupaObiektow>> GetGrupyAsync();
         Task<Obiekt> GetOneAsync(int obiektId);
         Task<Obiekt> GetOrCreateAsync(int? obiektId); 
         void Insert(Obiekt obiekt);
@@ -31,16 +32,20 @@ namespace Core.Repositories
             _context = context;
         }
 
-        public async Task<List<Obiekt>> GetAllAsync()
+        public async Task<List<GrupaObiektow>> GetGrupyAsync()
+        {
+            return await _context.GrupyObiektow.AsNoTracking().ToListAsync().ConfigureAwait(false);
+        }
+        public async Task<List<Obiekt>> GetAllAsync(int grupaId)
         {
             return await _context.Obiekty
-                .Where(o => o.Status != 3).AsNoTracking().ToListAsync().ConfigureAwait(false);
+                .Where(o => o.Status != 3 && o.GrupaObiektowId == grupaId).AsNoTracking().ToListAsync().ConfigureAwait(false);
         }
 
-        public IAsyncEnumerable<Obiekt> GetAsStream()
+        public IAsyncEnumerable<Obiekt> GetAsStream(int grupaId)
         {
             return _context.Obiekty
-                .Where(o => o.Status != 3).AsNoTracking().AsAsyncEnumerable();
+                .Where(o => o.Status != 3 && o.GrupaObiektowId == grupaId).AsNoTracking().AsAsyncEnumerable();
         }
 
         public async Task<Obiekt> GetOneAsync(int obiektId)

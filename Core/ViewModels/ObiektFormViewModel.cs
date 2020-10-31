@@ -85,9 +85,10 @@ namespace Core.ViewModels
             ImageBytes = await _pictureService.TakePictureAsync();
         }
 
-        private void SetPointOnMap()
+        private async void SetPointOnMap()
         {
-            throw new NotImplementedException();
+            await _navigationService.Navigate<SetLocationMapViewModel, Obiekt, Obiekt>(Obiekt);
+            await Obiekt.RaiseAllPropertiesChanged();
         }
 
         private async void GetCurrentLocation()

@@ -35,7 +35,7 @@ namespace Core
             if (context.Users.Any())
             {
                 LoggedIn = true;
-                RegisterAppStart<ObiektyViewModel>();
+                RegisterAppStart<MainViewModel>();
             }
             else
             {

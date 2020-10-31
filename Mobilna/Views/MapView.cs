@@ -10,7 +10,7 @@ using Fragment = AndroidX.Fragment.App.Fragment;
 
 namespace Mobilna.Views
 {
-    [Activity(Label = "Obiekt na mapie", MainLauncher = true)]
+    [Activity(Label = "Obiekt na mapie")]
     public class MapView : MvxActivity<MapViewModel>, IOnMapReadyCallback
     {
         private SupportMapFragment _mapFragment;

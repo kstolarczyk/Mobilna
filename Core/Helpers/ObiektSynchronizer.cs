@@ -7,9 +7,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Messages;
 using Core.Models;
 using Core.Services;
 using Microsoft.EntityFrameworkCore;
+using MvvmCross;
+using MvvmCross.Plugin.Messenger;
 
 namespace Core.Helpers
 {
@@ -21,7 +24,13 @@ namespace Core.Helpers
     {
         public static bool IsSynchronizing { get; private set; }
         public static readonly object Mutex = new object();
-
+        private static IMvxMessenger _messenger = null;
+        private static SyncStatusChangedMessage WhenInProgress = new SyncStatusChangedMessage(typeof(ObiektSynchronizer), true);
+        private static SyncStatusChangedMessage WhenDone = new SyncStatusChangedMessage(typeof(ObiektSynchronizer), false);
+        static ObiektSynchronizer()
+        {
+            Mvx.IoCProvider.TryResolve(out _messenger);
+        }
         public static async Task SynchronizeObiekty()
         {
             lock (Mutex)
@@ -32,8 +41,10 @@ namespace Core.Helpers
                 }
 
                 IsSynchronizing = true;
-                SynchronizingChanged?.Invoke();
+                // SynchronizingChanged?.Invoke();
             }
+            if (_messenger == null) Mvx.IoCProvider.TryResolve(out _messenger);
+            _messenger.Publish(WhenInProgress);
 
             try
             {
@@ -45,7 +56,8 @@ namespace Core.Helpers
             finally
             {
                 IsSynchronizing = false;
-                SynchronizingChanged?.Invoke();
+                // SynchronizingChanged?.Invoke();
+                _messenger.Publish(WhenDone);
             }
         }
 

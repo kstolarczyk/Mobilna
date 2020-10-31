@@ -23,28 +23,27 @@ using MvvmCross.ViewModels;
 
 namespace Core.ViewModels
 {
-    public class ObiektyViewModel : BaseViewModel
+    public class ObiektyViewModel : BaseViewModel<int>
     {
         private readonly IObiektRepository _repository;
-        private readonly IMvxReachability _reachability;
         private bool _isBusy;
-        private bool _isConnected;
-
         private readonly MvxInteraction<ContextMenuInteraction<Obiekt>> _contextMenuInteraction =
             new MvxInteraction<ContextMenuInteraction<Obiekt>>();
-
         private readonly IMvxNavigationService _navigation;
         private readonly IUserDialogs _userDialogs;
+        private readonly IMvxMessenger _messenger;
+        private int _grupaId;
+        private readonly MvxSubscriptionToken _statusChangedTag;
+        private readonly MvxSubscriptionToken _obiektSavedTag;
+        private readonly MvxSubscriptionToken _obiektDeletedTag;
 
-        public ObiektyViewModel(IObiektRepository repository, IMvxReachability reachability,
+        public ObiektyViewModel(IObiektRepository repository,
             IMvxNavigationService navigationService, IUserDialogs userDialogs, IMvxMessenger messenger)
         {
             _repository = repository;
-            _reachability = reachability;
             _navigation = navigationService;
             _userDialogs = userDialogs;
-            var timer = new Timer() {Interval = 5000, AutoReset = true, Enabled = true};
-            timer.Elapsed += Elapsed;
+            _messenger = messenger;
             ContextMenuCommand = new MvxAsyncCommand<Obiekt>(async o => _contextMenuInteraction.Raise(
                 new ContextMenuInteraction<Obiekt>()
                 {
@@ -52,21 +51,23 @@ namespace Core.ViewModels
                     ContextMenuCallback = ContextMenuHandle
                 }));
             DetailsCommand = new MvxAsyncCommand<Obiekt>(Details);
-            SynchronizeCommand = new MvxAsyncCommand(Synchronize, () => CanSynchronize);
             RefreshCommand = new MvxAsyncCommand(Refresh);
-            NowyObiektCommand = new MvxAsyncCommand(NowyObiekt, () => !IsSynchronizing);
-            GrupaSynchronizer.SynchronizingChanged += NotifySyncChanged;
-            ObiektSynchronizer.SynchronizingChanged += NotifySyncChanged;
-            ObiektSynchronizer.SynchronizingChanged += async () => await Reload();
-            messenger.Subscribe<ObiektSavedMessage>(OnObiektChanged, MvxReference.Strong);
-            messenger.Subscribe<ObiektDeletedMessage>(OnObiektDeleted, MvxReference.Strong);
-            messenger.Subscribe<ToastMessage>(OnToast, MvxReference.Strong);
+            _statusChangedTag = _messenger.Subscribe<SyncStatusChangedMessage>(SyncStatusChanged);
+            _obiektSavedTag = _messenger.Subscribe<ObiektSavedMessage>(OnObiektChanged, MvxReference.Strong);
+            _obiektDeletedTag = _messenger.Subscribe<ObiektDeletedMessage>(OnObiektDeleted, MvxReference.Strong);
         }
 
-        private void OnToast(ToastMessage msg)
+        private async void SyncStatusChanged(SyncStatusChangedMessage msg)
         {
-            Messages.Add(msg);
+            if (msg.IsSynchronizing) return;
+            await Reload();
         }
+
+        protected override void InitFromBundle(IMvxBundle parameters)
+        {
+            _grupaId = parameters.Read<ViewModelParameter<int>>().Value;
+        }
+
 
         private void OnObiektDeleted(ObiektDeletedMessage msg)
         {
@@ -88,19 +89,12 @@ namespace Core.ViewModels
             }
         }
 
-        public override void ViewAppeared()
+        public override void ViewDestroy(bool viewFinishing = true)
         {
-            base.ViewAppeared();
-            foreach (var msg in Messages)
-            {
-                _userDialogs.Toast(msg.Message, msg.Duration);
-            }
-            Messages.Clear();
-        }
-
-        private async Task NowyObiekt()
-        {
-            await _navigation.Navigate<ObiektFormViewModel, int?>(null);
+            base.ViewDestroy(viewFinishing);
+            _messenger.Unsubscribe<SyncStatusChangedMessage>(_statusChangedTag);
+            _messenger.Unsubscribe<ObiektDeletedMessage>(_obiektDeletedTag);
+            _messenger.Unsubscribe<ObiektSavedMessage>(_obiektSavedTag);
         }
 
         private async void ContextMenuHandle(Obiekt obiekt, ContextMenuOption option)
@@ -138,43 +132,9 @@ namespace Core.ViewModels
             _userDialogs.Toast("Pomyślnie usunięto obiekt!", TimeSpan.FromSeconds(3));
         }
 
-        public MvxAsyncCommand<Obiekt> ContextMenuCommand { get; set; }
-
-        public void NotifySyncChanged()
-        {
-            SynchronizeCommand.RaiseCanExecuteChanged();
-            NowyObiektCommand.RaiseCanExecuteChanged();
-            RaisePropertyChanged(() => SyncStatus);
-            RaisePropertyChanged(() => IsSynchronizing);
-        }
-
-        public async Task Synchronize()
-        {
-            try
-            {
-                await ObiektSynchronizer.SynchronizeObiekty();
-                await Reload();
-            }
-            catch (Exception e)
-            {
-                _userDialogs.Toast(e.Message, TimeSpan.FromSeconds(3));
-            }
-        }
-
-        private void Elapsed(object sender, ElapsedEventArgs e)
-        {
-            IsConnected = _reachability.IsHostReachable(WebService.ApiBaseUrl);
-        }
-
-
         public override async Task Initialize()
         {
-            IsConnected = _reachability.IsHostReachable(WebService.ApiBaseUrl);
-            if (IsSynchronizing) return;
-            await foreach (var obiekt in _repository.GetAsStream())
-            {
-                Obiekty.Add(obiekt);
-            }
+            await Reload();
         }
 
 
@@ -187,9 +147,12 @@ namespace Core.ViewModels
 
         public async Task Reload()
         {
-            if (ObiektSynchronizer.IsSynchronizing) return;
+            if (ObiektSynchronizer.IsSynchronizing || GrupaSynchronizer.IsSynchronizing) return;
             Obiekty.Clear();
-            await Initialize();
+            await foreach (var obiekt in _repository.GetAsStream(_grupaId))
+            {
+                Obiekty.Add(obiekt);
+            }
         }
 
         public bool IsBusy
@@ -198,27 +161,10 @@ namespace Core.ViewModels
             set => SetProperty(ref _isBusy, value);
         }
 
-        public bool IsConnected
-        {
-            get => _isConnected;
-            set => SetProperty(ref _isConnected, value, NotifySyncChanged);
-        }
-
-        public SynchronizationStatus SyncStatus =>
-            !IsConnected
-                ? SynchronizationStatus.Unavailable
-                : IsSynchronizing
-                    ? SynchronizationStatus.InProgress
-                    : SynchronizationStatus.NotStarted;
-
+        public MvxAsyncCommand<Obiekt> ContextMenuCommand { get; set; }
         public IMvxAsyncCommand RefreshCommand { get; set; }
-        public bool CanSynchronize => IsConnected && !ObiektSynchronizer.IsSynchronizing;
-        public IMvxAsyncCommand SynchronizeCommand { get; set; }
         public MvxObservableCollection<Obiekt> Obiekty { get; } = new MvxObservableCollection<Obiekt>();
         public IMvxInteraction<ContextMenuInteraction<Obiekt>> ContextMenuInteraction => _contextMenuInteraction;
         public IMvxAsyncCommand<Obiekt> DetailsCommand { get; set; }
-        public IMvxAsyncCommand NowyObiektCommand { get; set; }
-        public bool IsSynchronizing => ObiektSynchronizer.IsSynchronizing || GrupaSynchronizer.IsSynchronizing;
-        public List<ToastMessage> Messages { get; set; } = new List<ToastMessage>();
     }
 }

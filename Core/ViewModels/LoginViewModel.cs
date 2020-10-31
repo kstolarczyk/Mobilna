@@ -35,7 +35,7 @@ namespace Core.ViewModels
 
         public async Task Login()
         {
-            if(App.LoggedIn) await _navigationService.Navigate<ObiektyViewModel>();
+            if(App.LoggedIn) await _navigationService.Navigate<MainViewModel>();
             var dialogService = Mvx.IoCProvider.Resolve<IUserDialogs>();
             try
             {
@@ -44,12 +44,13 @@ namespace Core.ViewModels
                 _repository.Insert(user);
                 await _repository.SaveAsync();
                 App.LoggedIn = true;
-                await _navigationService.Navigate<ObiektyViewModel>();
+                await _navigationService.Navigate<MainViewModel>();
                 dialogService.HideLoading();
             }
             catch(ApiLoginException e)
             {
                 LoginModel.AddError(e.ApiError == ApiLoginError.Password ? nameof(LoginModel.Password) : nameof(LoginModel.Login), e.Message);
+                dialogService.HideLoading();
             }
 
         }

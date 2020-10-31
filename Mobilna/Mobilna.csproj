@@ -88,10 +88,12 @@
     <Compile Include="Views\DatePickerView.cs" />
     <Compile Include="Views\DateTimePickerView.cs" />
     <Compile Include="Views\LoginView.cs" />
+    <Compile Include="Views\MainView.cs" />
     <Compile Include="Views\MapView.cs" />
     <Compile Include="Views\ObiektDetailsView.cs" />
     <Compile Include="Views\ObiektFormView.cs" />
     <Compile Include="Views\ObiektyView.cs" />
+    <Compile Include="Views\SetLocationMapView.cs" />
     <Compile Include="Views\TimePickerView.cs" />
     <Compile Include="Workers\BaseWorker.cs" />
     <Compile Include="Workers\GrupySyncWorker.cs" />
@@ -423,9 +425,18 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_crop_original_black_36dp.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekt_set_location.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\xml\file_paths.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\obiekty_recyclerview.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

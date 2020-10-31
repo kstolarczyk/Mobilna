@@ -1,19 +1,22 @@
 ﻿using Acr.UserDialogs;
 using Android.App;
 using Android.OS;
+using Android.Runtime;
 using Android.Views;
 using Core.Interactions;
 using Core.Models;
 using Core.ViewModels;
 using MvvmCross.Base;
 using MvvmCross.DroidX.RecyclerView;
+using MvvmCross.Platforms.Android.Binding.BindingContext;
 using MvvmCross.Platforms.Android.Views;
+using MvvmCross.Platforms.Android.Views.Fragments;
 using Xamarin.Essentials;
 
 namespace Mobilna.Views
 {
-    [Activity(Label = "@string/obiekty_title")]
-    public class ObiektyView : MvxActivity<ObiektyViewModel>
+    [Register("mobilna.custom.fragments.ObiektyFragment")]
+    public class ObiektyView : MvxFragment<ObiektyViewModel>
     {
         private MvxRecyclerView _listView;
         private ContextMenuInteraction<Obiekt> _contextMenuInteraction;
@@ -21,22 +24,22 @@ namespace Mobilna.Views
         private void OnInteractionRequested(object sender, MvxValueEventArgs<ContextMenuInteraction<Obiekt>> e)
         {
             _contextMenuInteraction = e.Value;
-            OpenContextMenu(_listView);
+            Activity.OpenContextMenu(_listView);
         }
 
-        protected override void OnCreate(Bundle bundle)
+        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            base.OnCreate(bundle);
-            // Platform.Init(this, bundle);
-            SetContentView(Resource.Layout.obiekty_list);
-            _listView = FindViewById<MvxRecyclerView>(Resource.Id.obiekty_recyclerview);
+            var ignore = base.OnCreateView(inflater, container, savedInstanceState);
+            var view = this.BindingInflate(Resource.Layout.obiekty_recyclerview, null);
+            _listView = view.FindViewById<MvxRecyclerView>(Resource.Id.obiekty_recyclerview_list);
             RegisterForContextMenu(_listView);
             ViewModel.ContextMenuInteraction.Requested += OnInteractionRequested;
+            return view;
         }
 
         public override void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo menuInfo)
         {
-            if (v.Id != Resource.Id.obiekty_recyclerview) return;
+            if (v.Id != Resource.Id.obiekty_recyclerview_list) return;
             menu.Add(Menu.None, 0, 0, Resource.String.szczegoly);
             menu.Add(Menu.None, 1, 1, Resource.String.edytuj);
             menu.Add(Menu.None, 2, 2, Resource.String.usun);
