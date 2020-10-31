@@ -37,9 +37,9 @@ namespace Mobilna.Views
         public override void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo menuInfo)
         {
             if (v.Id != Resource.Id.obiekty_recyclerview) return;
-            menu.Add(Menu.None, 0, 0, Resource.String.szczegoly);
-            menu.Add(Menu.None, 1, 1, Resource.String.edytuj);
-            menu.Add(Menu.None, 2, 2, Resource.String.usun);
+            menu.Add(Menu.None, 0, 0, Resource.String.szczegoly_obiekty_view);
+            menu.Add(Menu.None, 1, 1, Resource.String.edytuj_obiekty_view);
+            menu.Add(Menu.None, 2, 2, Resource.String.usun_obiekty_view);
             menu.SetHeaderTitle(_contextMenuInteraction.CurrentObiekt.Nazwa);
             if (_contextMenuInteraction.CurrentObiekt.User != null) return;
             menu.GetItem(1)?.SetEnabled(false);

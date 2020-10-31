@@ -62,13 +62,13 @@
       android:id="@+id/linearLayout3">
       <ImageView
         android:src="@drawable/ic_wifi_tethering_green_400_36dp"
-        android:contentDescription="online_or_offline"
+        android:contentDescription="@string/online_offline"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         app:MvxBind="Drawable IsConnected, Converter=IsConnectedDrawable"
         android:id="@+id/imageView1" />
       <TextView
-        android:text="Online"
+        android:text="@string/status_polaczenia"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -97,7 +97,7 @@
         app:MvxBind="Drawable SyncStatus, Converter=CanSynchronizeDrawable"
         android:id="@+id/imageView2" />
       <TextView
-        android:text="Synchronizacja"
+        android:text="@string/synchronizacja_danych"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:MvxBind="Text SyncStatus, Converter=CanSynchronizeText"
         android:layout_width="wrap_content"

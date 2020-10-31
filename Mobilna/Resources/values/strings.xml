@@ -4,11 +4,35 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="form_title">Dodaj obiekt</string>
+  <!-- login.xml -->  
+    <string name="login">Login</string>
+    <string name="login_hint">Login</string>
+    <string name="password_hint">Password</string>
+    <string name="first_login">Pierwsze logowanie</string>
+  <!-- obiekt_details.xml -->
     <string name="edytuj">Edytuj</string>
     <string name="usun">Usuń</string>
-    <string name="szczegoly">Szczegóły</string>
+  <!-- obiekt_form.xml -->
+    <string name="zapisz">Zapisz</string>
+    <string name="ustaw_wspolrzedne">Ustaw współrz.</string>
+    <string name="wybierz_zdjecie">Wybierz zdjęcie</string>
+    <string name="symbol_obiektu_hint">Symbol obiektu</string>
+    <string name="nazwa_obiektu_hint">Nazwa obiektu</string>
+    <string name="grupa__obiektow_hint">Grupa obiektów</string>
+  <!-- obiekt_item.xml-->
+    <string name="zdjecie_obiektu">Zdjęcie obiektu</string> 
+  <!-- obiekty_list.xml-->
+    <string name="synchronizacja_danych">Synchronizacja</string>
+    <string name="status_polaczenia">Online</string>
+    <string name="online_offline">Online lub Offline</string>
+
+  <!-- ObiektyView.cs -->
+    <string name="szczegoly_obiekty_view">Szczegóły</string>
+    <string name="edytuj_obiekty_view">Edytuj</string>
+    <string name="usun_obiekty_view">Usuń</string>
+  
     <string name=" spinner_name">Wybierz Grupę Obiektów</string>
     <string name=" spinner_name_enum">Wybierz parametr</string>
-    <string name="form_title">Dodaj obiekt</string>
     <string name="grupa_label">Wybierz Grupę</string>
 </resources>
