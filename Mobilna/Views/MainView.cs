@@ -40,6 +40,7 @@ namespace Mobilna.Views
         {
             _adapter.FragmentsInfo.Clear();
             _adapter.FragmentsInfo.AddRange(e.Value.Select(SetupFragment));
+            _viewPager.OffscreenPageLimit = _adapter.FragmentsInfo.Count;
             RunOnUiThread(() => _adapter.NotifyDataSetChanged());
         }
         private MvxViewPagerFragmentInfo SetupFragment(GrupaObiektow grupa)
