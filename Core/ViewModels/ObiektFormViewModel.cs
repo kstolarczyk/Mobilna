@@ -52,6 +52,12 @@ namespace Core.ViewModels
             SaveCommand = new MvxAsyncCommand(Save, () => CanSave);
             PickImageCommand = new MvxAsyncCommand(ChooseImage);
             GetCoordsCommand = new MvxAsyncCommand(GetCoords);
+            BackArrowCommand = new MvxAsyncCommand(GoBack);
+        }
+
+        private async Task GoBack()
+        {
+            await _navigationService.Close(this);
         }
 
         private Task ChooseImage()
@@ -214,5 +220,6 @@ namespace Core.ViewModels
         public MvxObservableCollection<GrupaObiektow> GrupyObiektow { get; } = new MvxObservableCollection<GrupaObiektow>();
         public IMvxAsyncCommand PickImageCommand { get; set; }
         public IMvxAsyncCommand GetCoordsCommand { get; set; }
+        public IMvxAsyncCommand BackArrowCommand { get; set; }
     }
 }

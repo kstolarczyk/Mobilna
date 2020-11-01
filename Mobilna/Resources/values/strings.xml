@@ -4,6 +4,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_szczegoly">Szczegóły</string>
     <string name="form_title">Dodaj obiekt</string>
   <!-- login.xml -->  
     <string name="login">Login</string>
@@ -35,4 +36,5 @@
     <string name=" spinner_name">Wybierz Grupę Obiektów</string>
     <string name=" spinner_name_enum">Wybierz parametr</string>
     <string name="grupa_label">Wybierz Grupę</string>
+    <string name="toolbar_arrow_desc">Powrót do poprzedniej aktywności</string>
 </resources>

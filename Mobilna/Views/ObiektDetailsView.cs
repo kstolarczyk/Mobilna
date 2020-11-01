@@ -20,6 +20,7 @@ namespace Mobilna.Views
         private string _imagePath;
         protected override void OnCreate(Bundle bundle)
         {
+            this.SetTheme(Resource.Style.AppThemeNoActionBar);
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.obiekt_details);
             ViewModel.PopupImageInteraction.Requested += OnInteractionRequested;
