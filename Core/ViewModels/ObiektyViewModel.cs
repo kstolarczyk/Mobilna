@@ -27,8 +27,6 @@ namespace Core.ViewModels
     {
         private readonly IObiektRepository _repository;
         private bool _isBusy;
-        private readonly MvxInteraction<ContextMenuInteraction<Obiekt>> _contextMenuInteraction =
-            new MvxInteraction<ContextMenuInteraction<Obiekt>>();
         private readonly IMvxNavigationService _navigation;
         private readonly IUserDialogs _userDialogs;
         private readonly IMvxMessenger _messenger;
@@ -44,13 +42,8 @@ namespace Core.ViewModels
             _navigation = navigationService;
             _userDialogs = userDialogs;
             _messenger = messenger;
-            ContextMenuCommand = new MvxAsyncCommand<Obiekt>(async o => _contextMenuInteraction.Raise(
-                new ContextMenuInteraction<Obiekt>()
-                {
-                    CurrentObiekt = await _repository.GetOneAsync(o.ObiektId),
-                    ContextMenuCallback = ContextMenuHandle
-                }));
-            DetailsCommand = new MvxAsyncCommand<Obiekt>(Details);
+            ContextMenuCommand = new MvxAsyncCommand<Obiekt>(ContextMenu);
+            DetailsCommand = new MvxAsyncCommand<Obiekt>(OnSzczegoly);
             RefreshCommand = new MvxAsyncCommand(Refresh);
             _statusChangedTag = _messenger.Subscribe<SyncStatusChangedMessage>(SyncStatusChanged);
             _obiektSavedTag = _messenger.Subscribe<ObiektSavedMessage>(OnObiektChanged, MvxReference.Strong);
@@ -68,6 +61,37 @@ namespace Core.ViewModels
             _grupaId = parameters.Read<ViewModelParameter<int>>().Value;
         }
 
+        public Task ContextMenu(Obiekt obiekt)
+        {
+            _userDialogs.ActionSheet(new ActionSheetConfig()
+            {
+              Options  = new List<ActionSheetOption>()
+              {
+                  new ActionSheetOption("Szczegóły", async () => await OnSzczegoly(obiekt)),
+                  new ActionSheetOption("Edytuj", async () => await OnEdytuj(obiekt)),
+                  new ActionSheetOption("Usuń", async () => await OnUsun(obiekt))
+              }
+            });
+            return Task.CompletedTask;
+        }
+
+        private async Task OnUsun(Obiekt obiekt)
+        {
+            if (await _userDialogs.ConfirmAsync("Czy na pewno chcesz usunąć?",
+                $"Potwierdź usunięcie {obiekt.Symbol}", "Tak", "Nie"))
+            {
+                DeleteObiekt(obiekt);
+            }        }
+
+        private async Task OnEdytuj(Obiekt obiekt)
+        {
+            await _navigation.Navigate<ObiektFormViewModel, int?>(obiekt.ObiektId);
+        }
+
+        private async Task OnSzczegoly(Obiekt obiekt)
+        {
+            await _navigation.Navigate<ObiektDetailsViewModel, int>(obiekt.ObiektId);
+        }
 
         private void OnObiektDeleted(ObiektDeletedMessage msg)
         {
@@ -97,34 +121,6 @@ namespace Core.ViewModels
             _messenger.Unsubscribe<SyncStatusChangedMessage>(_statusChangedTag);
             _messenger.Unsubscribe<ObiektDeletedMessage>(_obiektDeletedTag);
             _messenger.Unsubscribe<ObiektSavedMessage>(_obiektSavedTag);
-        }
-
-        private async void ContextMenuHandle(Obiekt obiekt, ContextMenuOption option)
-        {
-            switch (option)
-            {
-                case ContextMenuOption.Details:
-                    await Details(obiekt);
-                    break;
-                case ContextMenuOption.Delete:
-                    if (await _userDialogs.ConfirmAsync("Czy na pewno chcesz usunąć?",
-                        $"Potwierdź usunięcie {obiekt.Symbol}", "Tak", "Nie"))
-                    {
-                        DeleteObiekt(obiekt);
-                    }
-
-                    break;
-                case ContextMenuOption.Edit:
-                    await _navigation.Navigate<ObiektFormViewModel, int?>(obiekt.ObiektId);
-                    break;
-                case ContextMenuOption.None:
-                    return;
-            }
-        }
-
-        public async Task Details(Obiekt obiekt)
-        {
-            await _navigation.Navigate<ObiektDetailsViewModel, int>(obiekt.ObiektId);
         }
 
         private async void DeleteObiekt(Obiekt obiekt)
@@ -166,7 +162,6 @@ namespace Core.ViewModels
         public MvxAsyncCommand<Obiekt> ContextMenuCommand { get; set; }
         public IMvxAsyncCommand RefreshCommand { get; set; }
         public MvxObservableCollection<Obiekt> Obiekty { get; } = new MvxObservableCollection<Obiekt>();
-        public IMvxInteraction<ContextMenuInteraction<Obiekt>> ContextMenuInteraction => _contextMenuInteraction;
         public IMvxAsyncCommand<Obiekt> DetailsCommand { get; set; }
     }
 }
