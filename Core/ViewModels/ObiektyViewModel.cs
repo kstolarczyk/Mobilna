@@ -71,6 +71,7 @@ namespace Core.ViewModels
 
         private void OnObiektDeleted(ObiektDeletedMessage msg)
         {
+            if (msg.Obiekt.GrupaObiektowId != _grupaId) return;
             var index = Obiekty.IndexOf(o => o.ObiektId == msg.Obiekt.ObiektId);
             if (index < 0) return;
             Obiekty.RemoveAt(index);
@@ -78,6 +79,7 @@ namespace Core.ViewModels
 
         private void OnObiektChanged(ObiektSavedMessage msg)
         {
+            if (msg.Obiekt.GrupaObiektowId != _grupaId) return;
             var index = Obiekty.IndexOf(o => o.ObiektId == msg.Obiekt.ObiektId);
             if (index >= 0)
             {

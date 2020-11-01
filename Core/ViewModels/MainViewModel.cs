@@ -22,18 +22,19 @@ namespace Core.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private IObiektRepository _repository;
-        private IMvxReachability _reachability;
+        private readonly IObiektRepository _repository;
+        private readonly IMvxReachability _reachability;
         private bool _isConnected;
-        private IMvxNavigationService _navigation;
-        private IUserDialogs _userDialogs;
+        private readonly IMvxNavigationService _navigation;
+        private readonly IUserDialogs _userDialogs;
         private readonly IMvxMessenger _messenger;
-        private MvxSubscriptionToken _toastTag;
-        private MvxSubscriptionToken _syncStatusTag;
+        private readonly MvxSubscriptionToken _toastTag;
+        private readonly MvxSubscriptionToken _syncStatusTag;
         private readonly MvxInteraction<IEnumerable<GrupaObiektow>> _grupySyncDoneInteraction = new MvxInteraction<IEnumerable<GrupaObiektow>>();
 
         public MainViewModel(IObiektRepository repository, IMvxReachability reachability,
-            IMvxNavigationService navigationService, IUserDialogs userDialogs, IMvxMessenger messenger)
+            IMvxNavigationService navigationService, IUserDialogs userDialogs,
+            IMvxMessenger messenger)
         {
             _repository = repository;
             _reachability = reachability;
@@ -105,6 +106,7 @@ namespace Core.ViewModels
 
         public override async Task Initialize()
         {
+            IsConnected = _reachability.IsHostReachable(WebService.ApiBaseUrl);
             GrupyObiektow.AddRange(await _repository.GetGrupyAsync());
         }
 

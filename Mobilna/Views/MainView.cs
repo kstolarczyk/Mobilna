@@ -33,15 +33,15 @@ namespace Mobilna.Views
             _viewPager.Adapter = _adapter;
             _viewPager.OffscreenPageLimit = fragments.Count;
             _tablayout.SetupWithViewPager(_viewPager);
-            ViewModel.GrupySyncDoneInteraction.Requested += OnInteractionRequested;
+            ViewModel.GrupySyncDoneInteraction.Requested += (s, e) => RunOnUiThread(() => UpdateAdapter(e.Value));
         }
 
-        private void OnInteractionRequested(object sender, MvxValueEventArgs<IEnumerable<GrupaObiektow>> e)
+        private void UpdateAdapter(IEnumerable<GrupaObiektow> items)
         {
             _adapter.FragmentsInfo.Clear();
-            _adapter.FragmentsInfo.AddRange(e.Value.Select(SetupFragment));
+            _adapter.FragmentsInfo.AddRange(items.Select(SetupFragment));
+            _adapter.NotifyDataSetChanged();
             _viewPager.OffscreenPageLimit = _adapter.FragmentsInfo.Count;
-            RunOnUiThread(() => _adapter.NotifyDataSetChanged());
         }
         private MvxViewPagerFragmentInfo SetupFragment(GrupaObiektow grupa)
         {
