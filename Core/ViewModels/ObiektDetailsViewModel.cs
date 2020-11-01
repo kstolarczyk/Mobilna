@@ -32,9 +32,14 @@ namespace Core.ViewModels
             ShowMapCommand = new MvxAsyncCommand(ShowMap);
             DeleteObiektCommand = new MvxAsyncCommand(DeleteObiekt, CanDelete);
             EdytujObiektCommand = new MvxAsyncCommand(EdytujObiekt, CanEdytuj);
+            BackArrowCommand = new MvxAsyncCommand(GoBack);
             ShowImageCommand = new MvxCommand( () => _popupImageInteraction.Raise(Obiekt.ZdjecieLokal), CanShowImage);
             _messenger.Subscribe<ToastMessage>(OnToast, MvxReference.Strong);
             _messenger.Subscribe<ObiektSavedMessage>(OnObiektChanged, MvxReference.Strong);
+        }
+        private async Task GoBack()
+        {
+            await _navigationService.Close(this);
         }
 
         private void OnObiektChanged(ObiektSavedMessage msg)
@@ -110,6 +115,7 @@ namespace Core.ViewModels
         public IMvxAsyncCommand DeleteObiektCommand { get; set; }
         public IMvxAsyncCommand EdytujObiektCommand { get; set; }
         public IMvxCommand ShowImageCommand { get; set; }
+        public IMvxAsyncCommand BackArrowCommand { get; set; }
         public IMvxInteraction<string> PopupImageInteraction => _popupImageInteraction;
         public List<ToastMessage> Toasts { get; } = new List<ToastMessage>();
     }
