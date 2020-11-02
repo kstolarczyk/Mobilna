@@ -43,8 +43,8 @@
         <com.google.android.material.textfield.TextInputLayout
           android:minWidth="25px"
           android:minHeight="25px"
-          app:errorEnabled="true"
           android:layout_marginTop="10dp"
+          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
           android:layout_width="match_parent"
           android:layout_height="wrap_content">
           <com.google.android.material.textfield.TextInputEditText
@@ -52,6 +52,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/nazwa_obiektu_hint"
             android:inputType="text"
+            android:layout_marginBottom="10dp"
             app:MvxBind="Text Obiekt.Nazwa; Error Obiekt.NazwaError"
             android:id="@+id/textInputEditText2" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -59,15 +60,16 @@
         <com.google.android.material.textfield.TextInputLayout
           android:minWidth="25px"
           android:minHeight="25px"
-          app:errorEnabled="true"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
           android:id="@+id/textInputLayout3">
           <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/symbol_obiektu_hint"
             android:inputType="text"
+            android:layout_marginBottom="10dp"
             app:MvxBind="Text Obiekt.Symbol; Error Obiekt.SymbolError"
             android:id="@+id/textInputEditText3" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -134,15 +136,17 @@
           android:layout_height="wrap_content"
           android:orientation="horizontal"
           android:layout_marginVertical="10dp"
+          android:hint="@string/grupa__obiektow_hint"
           style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
           <mobilna.custom.comboview
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none"
-            android:hint="@string/grupa__obiektow_hint"
             android:paddingHorizontal="15dp"
+            android:paddingVertical="15dp"
+            android:textAppearance="?android:attr/textAppearanceListItem"
             android:id="@+id/grupyCombo"
-            app:MvxBind="ItemsSource GrupyObiektow; SelectedObject SelectedGrupa; Text SelectedGrupa; Error Obiekt.GrupaObiektowError" />
+            app:MvxBind="ItemsSource GrupyObiektow, Mode=OneWay; SelectedObject SelectedGrupa; Text SelectedGrupa; Error Obiekt.GrupaObiektowError; Enabled IsNew" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <MvvmCross.DroidX.RecyclerView.MvxRecyclerView

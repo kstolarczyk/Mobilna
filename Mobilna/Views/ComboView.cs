@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Linq;
 using Android.Content;
 using Android.Runtime;
+using Android.Text;
 using Android.Util;
 using Android.Views;
+using Java.Lang;
 using MvvmCross.Platforms.Android.Binding.Views;
 
 namespace Mobilna.Views
@@ -14,7 +17,6 @@ namespace Mobilna.Views
         {
             KeyListener = null;
         }
-
         public ComboView(Context context, IAttributeSet attrs, MvxFilteringAdapter adapter) : base(context, attrs, adapter)
         {
             KeyListener = null;
@@ -23,6 +25,15 @@ namespace Mobilna.Views
         protected ComboView(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
         {
             KeyListener = null;
+        }
+
+        protected override void OnFinishInflate()
+        {
+            base.OnFinishInflate();
+            if (Enabled)
+            {
+                Adapter.FilterPredicate = (o, s) => true;
+            }
         }
     }
 }

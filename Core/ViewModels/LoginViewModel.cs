@@ -22,12 +22,15 @@ namespace Core.ViewModels
         private readonly IUserRepository _repository;
         private readonly IRemoteLoginService _loginService;
         private readonly IMvxNavigationService _navigationService;
+        private readonly IUserDialogs _userDialogs;
 
-        public LoginViewModel(IUserRepository repository, IRemoteLoginService loginService, IMvxNavigationService navigationService)
+        public LoginViewModel(IUserRepository repository, IRemoteLoginService loginService,
+            IMvxNavigationService navigationService, IUserDialogs userDialogs)
         {
             _repository = repository;
             _loginService = loginService;
             _navigationService = navigationService;
+            _userDialogs = userDialogs;
             LoginModel = new LoginWrapper();
             SubmitCommand = new MvxAsyncCommand(Login, () => !LoginModel.HasErrors);
             LoginModel.ErrorsChanged += (s, e) => SubmitCommand.RaiseCanExecuteChanged();
@@ -36,23 +39,20 @@ namespace Core.ViewModels
         public async Task Login()
         {
             if(App.LoggedIn) await _navigationService.Navigate<MainViewModel>();
-            var dialogService = Mvx.IoCProvider.Resolve<IUserDialogs>();
             try
             {
-                dialogService.ShowLoading("Logowanie...");
+                _userDialogs.ShowLoading("Logowanie...");
                 var user = await _loginService.LoginAsync(LoginModel.Login, LoginModel.Password);
                 _repository.Insert(user);
                 await _repository.SaveAsync();
                 App.LoggedIn = true;
                 await _navigationService.Navigate<MainViewModel>();
-                dialogService.HideLoading();
             }
             catch(ApiLoginException e)
             {
                 LoginModel.AddError(e.ApiError == ApiLoginError.Password ? nameof(LoginModel.Password) : nameof(LoginModel.Login), e.Message);
-                dialogService.HideLoading();
             }
-
+            _userDialogs.HideLoading();
         }
 
         

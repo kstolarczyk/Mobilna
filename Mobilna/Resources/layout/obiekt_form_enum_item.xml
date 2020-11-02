@@ -13,7 +13,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
+    android:paddingHorizontal="15dp"
+    android:paddingVertical="15dp"
+    android:textAppearance="?android:attr/textAppearanceListItem"
     android:inputType="none"
-    android:paddingHorizontal="10dp"
     app:MvxBind="ItemsSource TypParametrow.AkceptowalneWartosci; SelectedObject Wartosc; Text Wartosc; Error WartoscError" />
 </com.google.android.material.textfield.TextInputLayout>

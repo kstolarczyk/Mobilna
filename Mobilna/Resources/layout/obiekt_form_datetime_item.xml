@@ -5,14 +5,15 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:minWidth="25px"
   android:minHeight="25px"
-  app:errorEnabled="true"
   app:MvxBind="Hint TypParametrow.Nazwa"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
+  style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
   android:id="@+id/textInputLayout2">
   <mobilna.custom.datetimepicker
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
     app:MvxBind="Text Wartosc; Error WartoscError"
      />
 </com.google.android.material.textfield.TextInputLayout>

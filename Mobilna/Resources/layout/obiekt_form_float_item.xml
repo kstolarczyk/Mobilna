@@ -9,11 +9,13 @@
   app:MvxBind="Hint TypParametrow.Nazwa"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
+  style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
   android:id="@+id/textInputLayout2">
   <com.google.android.material.textfield.TextInputEditText
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:inputType="numberDecimal"
+    android:layout_marginBottom="15dp"
     app:MvxBind="Text Wartosc; Error WartoscError"
     android:id="@+id/textInputEditText2" />
 </com.google.android.material.textfield.TextInputLayout>

@@ -21,6 +21,7 @@ namespace Core.Repositories
         Task DeleteInstantlyAsync(Obiekt obiekt);
         Task UpdateInstantlyAsync(Obiekt obiekt);
         Task SaveChangesAsync();
+        MyDbContext GetContext();
     }
 
     public class ObiektRepository : BaseRepository, IObiektRepository
@@ -32,9 +33,12 @@ namespace Core.Repositories
             _context = context;
         }
 
+        public MyDbContext GetContext() => _context;
+
         public async Task<List<GrupaObiektow>> GetGrupyAsync()
         {
-            return await _context.GrupyObiektow.AsNoTracking().ToListAsync().ConfigureAwait(false);
+            return await _context.GrupyObiektow.Include(g => g.TypyParametrow).
+                ToListAsync().ConfigureAwait(false);
         }
         public async Task<List<Obiekt>> GetAllAsync(int grupaId)
         {

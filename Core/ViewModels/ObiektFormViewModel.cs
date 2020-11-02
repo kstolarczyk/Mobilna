@@ -25,7 +25,6 @@ namespace Core.ViewModels
     public class ObiektFormViewModel : BaseViewModel<int?>
     {
         private readonly IObiektRepository _repository;
-        private readonly IGrupaObiektowRepository _grupaRepository;
         private readonly IMvxNavigationService _navigationService;
         private readonly IUserDialogs _userDialogs;
         private GrupaObiektow _selectedGrupa;
@@ -37,13 +36,12 @@ namespace Core.ViewModels
         private byte[] _imageBytes;
 
 
-        public ObiektFormViewModel(IObiektRepository repository, IGrupaObiektowRepository grupaObiektowRepository, 
+        public ObiektFormViewModel(IObiektRepository repository,
             IMvxNavigationService navigationService, IUserDialogs userDialogs,
             ILocationService locationService, IPictureService pictureService,
             IMvxMessenger messenger)
         {
             _repository = repository;
-            _grupaRepository = grupaObiektowRepository;
             _navigationService = navigationService;
             _userDialogs = userDialogs;
             _locationService = locationService;
@@ -62,7 +60,7 @@ namespace Core.ViewModels
 
         private Task ChooseImage()
         {
-            Mvx.IoCProvider.Resolve<IUserDialogs>().ActionSheet(new ActionSheetConfig()
+            _userDialogs.ActionSheet(new ActionSheetConfig()
             {
                 Options = new List<ActionSheetOption>()
                 {
@@ -75,7 +73,7 @@ namespace Core.ViewModels
 
         private Task GetCoords()
         {
-            Mvx.IoCProvider.Resolve<IUserDialogs>().ActionSheet(new ActionSheetConfig()
+            _userDialogs.ActionSheet(new ActionSheetConfig()
             {
                 Options = new List<ActionSheetOption>()
                 {
@@ -123,7 +121,6 @@ namespace Core.ViewModels
         private async Task Save()
         {
             _userDialogs.ShowLoading("Zapisywanie...");
-            Obiekt.GrupaObiektow = SelectedGrupa;
             Obiekt.Parametry = Parametry.ToList();
             try
             {
@@ -131,13 +128,14 @@ namespace Core.ViewModels
                 await (IsNew ? _repository.InsertInstantlyAsync(Obiekt) : _repository.UpdateInstantlyAsync(Obiekt));
                 _messenger.Publish(new ToastMessage(this, "Obiekt pomyślnie zapisany!", TimeSpan.FromSeconds(3)));
                 _messenger.Publish(new ObiektSavedMessage(this, Obiekt));
-                _userDialogs.HideLoading();
                 await _navigationService.Close(this);
             }
             catch(Exception e)
             {
                 _userDialogs.Toast(e.Message, TimeSpan.FromSeconds(3));
             }
+            _userDialogs.HideLoading();
+
         }
 
         private async Task<string> SaveImageLocally()
@@ -164,7 +162,7 @@ namespace Core.ViewModels
         }
         public override async Task Initialize()
         {
-            GrupyObiektow.AddRange(await _grupaRepository.GetAllAsync());
+            GrupyObiektow.AddRange(await _repository.GetGrupyAsync());
             Obiekt = await _repository.GetOrCreateAsync(_obiektId);
             ImageBytes = await ReadImageAsync(Obiekt.ZdjecieLokal);
             Obiekt.ErrorsChanged += ErrorsChanged;
@@ -197,8 +195,8 @@ namespace Core.ViewModels
   
         private void LoadParametry()
         {
-            Obiekt.GrupaObiektow = SelectedGrupa;
             if (!IsNew) return;
+            Obiekt.GrupaObiektow = SelectedGrupa;
             Parametry.AsParallel().ForAll(p => p.ErrorsChanged -= ErrorsChanged);
             Parametry.ReplaceRange(SelectedGrupa.TypyParametrow.Select(t => new Parametr()
             {
