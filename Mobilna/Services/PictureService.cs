@@ -31,7 +31,9 @@ namespace Mobilna.Services
                 Mvx.IoCProvider.Resolve<IUserDialogs>().Toast("Brak uprawnień do aparatu!. Sprawdź ustawienia.", TimeSpan.FromSeconds(3));
                 return default;
             }
-            var stream = await _chooserTask.TakePictureAsync(MaxImageDimenson, Quality).ConfigureAwait(false);
+
+            var stream = await _chooserTask.TakePictureAsync(MaxImageDimenson, Quality);
+            if (stream == null || stream.Length == 0) return null;
             var bytes = new byte[stream.Length];
             await stream.ReadAsync(bytes, 0, (int)stream.Length).ConfigureAwait(false);
             return bytes;
@@ -50,7 +52,8 @@ namespace Mobilna.Services
 
         public async Task<byte[]> ChoosePictureAsync()
         {
-            var stream = await _chooserTask.ChoosePictureFromLibraryAsync(MaxImageDimenson, Quality).ConfigureAwait(false);
+            var stream = await _chooserTask.ChoosePictureFromLibraryAsync(MaxImageDimenson, Quality);
+            if (stream == null || stream.Length == 0) return null;
             var bytes = new byte[stream.Length];
             await stream.ReadAsync(bytes, 0, (int)stream.Length).ConfigureAwait(false);
             return bytes;

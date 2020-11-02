@@ -1,25 +1,11 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using Acr.UserDialogs;
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
-using Android.Graphics;
-using Android.Media;
 using Android.OS;
-using Android.Provider;
 using Android.Runtime;
-using Android.Widget;
 using Core.ViewModels;
-using Java.Nio;
 using MvvmCross.Platforms.Android.Views;
-using MvvmCross.Platforms.Android.Views.Base;
-using MvvmCross.Plugin.PictureChooser;
-using MvvmCross.Plugin.PictureChooser.Platforms.Android;
 using Xamarin.Essentials;
-using Orientation = Android.Media.Orientation;
-using Path = Android.Graphics.Path;
-using Stream = System.IO.Stream;
 
 
 namespace Mobilna.Views
@@ -32,13 +18,8 @@ namespace Mobilna.Views
             Instance = this;
             Instance.SetTheme(Resource.Style.AppThemeNoActionBar);
             base.OnCreate(bundle);
-            SetContentView(Resource.Layout.obiekt_form);
             Platform.Init(this, bundle);
-        }
-
-
-        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent intent) {  
-            base.OnActivityResult(requestCode, resultCode, intent);
+            SetContentView(Resource.Layout.obiekt_form);
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
