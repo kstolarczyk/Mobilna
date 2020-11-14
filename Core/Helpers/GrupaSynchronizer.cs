@@ -71,10 +71,15 @@ namespace Core.Helpers
 
             if (nieUsuwane.Count > 0)
             {
-                nieUsuwane.ForEach(g =>
-                    g.TypyParametrow = g.TypyParametrow.Select(t => context.TypyParametrow.Find(t.TypParametrowId)).ToList());
+                var grupytypy = nieUsuwane.SelectMany(g => g.TypyParametrow.Select(t => new GrupaObiektowTypParametrow()
+                {
+                    GrupaObiektowId = g.GrupaObiektowId,
+                    TypParametrowId = t.TypParametrowId
+                })).ToList();
+                nieUsuwane.ForEach(g => g.TypyParametrow.Clear());
                 var toAdd = nieUsuwane.Where(g => context.GrupyObiektow.Find(g.GrupaObiektowId)?.Update(g) == null);
                 await context.GrupyObiektow.AddRangeAsync(toAdd).ConfigureAwait(false);
+                await context.GrupaObiektowTypParametrow.AddRangeAsync(grupytypy).ConfigureAwait(false);
             }
         }
 

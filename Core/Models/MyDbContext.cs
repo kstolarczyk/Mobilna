@@ -21,7 +21,7 @@ namespace Core.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite($"Filename={DatabasePath}");
+            optionsBuilder.UseSqlite($"Filename={DatabasePath};");
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +31,8 @@ namespace Core.Models
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<string[]>(v)
                 );
+            modelBuilder.Entity<GrupaObiektowTypParametrow>()
+                .HasKey(gt => new {gt.GrupaObiektowId, gt.TypParametrowId});
         }
 
         public async Task ClearExceptUserAsync()
@@ -52,6 +54,7 @@ namespace Core.Models
         public DbSet<TypParametrow> TypyParametrow { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<GrupaObiektow> GrupyObiektow { get; set; }
+        public DbSet<GrupaObiektowTypParametrow> GrupaObiektowTypParametrow { get; set; }
     }
 
     public static class DbSetExtensions

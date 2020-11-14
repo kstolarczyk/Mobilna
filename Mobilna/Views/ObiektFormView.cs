@@ -15,8 +15,6 @@ namespace Mobilna.Views
     {
         internal static ObiektFormView Instance { get; private set; }
         protected override void OnCreate(Bundle bundle) {  
-            Instance = this;
-            Instance.SetTheme(Resource.Style.AppThemeNoActionBar);
             base.OnCreate(bundle);
             Platform.Init(this, bundle);
             SetContentView(Resource.Layout.obiekt_form);

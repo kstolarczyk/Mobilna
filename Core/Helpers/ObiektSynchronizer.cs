@@ -154,11 +154,11 @@ namespace Core.Helpers
         {
             var remoteGrupyIds = obiekty.Select(o => o.GrupaObiektowId).Distinct().ToList();
             var localGrupy = await context.GrupyObiektow.AsNoTracking()
-                .Where(g => remoteGrupyIds.Contains(g.GrupaObiektowId)).Include(g => g.TypyParametrow)
+                .Where(g => remoteGrupyIds.Contains(g.GrupaObiektowId)).Include(g => g.GrupaObiektowTypParametrow)
                 .ToListAsync().ConfigureAwait(false);
             if (localGrupy.Count != remoteGrupyIds.Count) return false;
             var grupyParametryMap = localGrupy.ToDictionary(g => g.GrupaObiektowId,
-                g => g.TypyParametrow.Select(t => t.TypParametrowId).ToList());
+                g => g.GrupaObiektowTypParametrow.Select(gt => gt.TypParametrowId).ToList());
             return !obiekty.AsParallel().Any(o =>
                 o.Parametry.Count != grupyParametryMap[o.GrupaObiektowId].Count || o.Parametry.Any(p =>
                     !grupyParametryMap[o.GrupaObiektowId].Contains(p.TypParametrowId)));

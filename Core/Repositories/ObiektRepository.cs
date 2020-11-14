@@ -37,8 +37,9 @@ namespace Core.Repositories
 
         public async Task<List<GrupaObiektow>> GetGrupyAsync()
         {
-            return await _context.GrupyObiektow.Include(g => g.TypyParametrow).
-                ToListAsync().ConfigureAwait(false);
+            var grupy = await _context.GrupyObiektow.Include(g => g.GrupaObiektowTypParametrow).ThenInclude(gt => gt.TypParametrow).ToListAsync().ConfigureAwait(false);
+            grupy.ForEach(g => g.TypyParametrow = g.GrupaObiektowTypParametrow.Select(gt => gt.TypParametrow).ToList());
+            return grupy;
         }
         public async Task<List<Obiekt>> GetAllAsync(int grupaId)
         {

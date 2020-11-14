@@ -135,7 +135,6 @@ namespace Core.ViewModels
             await Reload();
         }
 
-
         public async Task Refresh()
         {
             IsBusy = true;

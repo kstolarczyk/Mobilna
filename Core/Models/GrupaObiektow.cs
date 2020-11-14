@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using MvvmCross.ViewModels;
 
 namespace Core.Models
@@ -23,15 +24,16 @@ namespace Core.Models
         public DateTime? OstatniaAktualizacja { get; set; }
         public bool Usunieta { get; set; }
         public List<Obiekt> Obiekty { get; set; } = new List<Obiekt>();
-        public List<TypParametrow> TypyParametrow { get; set; } = new List<TypParametrow>();
 
+        public List<GrupaObiektowTypParametrow> GrupaObiektowTypParametrow { get; set; } = new List<GrupaObiektowTypParametrow>();
+        public List<TypParametrow> TypyParametrow { get; set; } = new List<TypParametrow>();
         public GrupaObiektow Update(GrupaObiektow other)
         {
             Nazwa = other.Nazwa;
             Symbol = other.Symbol;
             OstatniaAktualizacja = other.OstatniaAktualizacja;
             Usunieta = other.Usunieta;
-            TypyParametrow = other.TypyParametrow;
+            GrupaObiektowTypParametrow = other.GrupaObiektowTypParametrow;
             return this;
         }
         public override string ToString()

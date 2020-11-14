@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mobilna", "Mobilna\Mobilna.csproj", "{78BF848D-CF48-48B9-83B4-4BC0773A8BC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{4CF8624E-B1B7-40CF-9E0C-8BCAD9533F4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{4CF8624E-B1B7-40CF-9E0C-8BCAD9533F4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandTools", "CommandTools\CommandTools.csproj", "{65B2D42D-F5AB-4B72-A236-4CD1E1CC5C1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandTools", "CommandTools\CommandTools.csproj", "{65B2D42D-F5AB-4B72-A236-4CD1E1CC5C1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

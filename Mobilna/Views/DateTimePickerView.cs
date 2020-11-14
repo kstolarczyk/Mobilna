@@ -9,6 +9,7 @@ using Google.Android.Material.TextField;
 namespace Mobilna.Views
 {
     [Register("mobilna.custom.datetimepicker")]
+    [Preserve(AllMembers = true)]
     public class DateTimePickerView : TextInputEditText
     {
         protected DateTimePickerView(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)

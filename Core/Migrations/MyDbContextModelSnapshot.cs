@@ -14,7 +14,7 @@ namespace Core.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.8");
+                .HasAnnotation("ProductVersion", "3.1.9");
 
             modelBuilder.Entity("Core.Models.GrupaObiektow", b =>
                 {
@@ -43,6 +43,21 @@ namespace Core.Migrations
                     b.ToTable("GrupyObiektow");
                 });
 
+            modelBuilder.Entity("Core.Models.GrupaObiektowTypParametrow", b =>
+                {
+                    b.Property<int>("GrupaObiektowId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TypParametrowId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("GrupaObiektowId", "TypParametrowId");
+
+                    b.HasIndex("TypParametrowId");
+
+                    b.ToTable("GrupaObiektowTypParametrow");
+                });
+
             modelBuilder.Entity("Core.Models.Obiekt", b =>
                 {
                     b.Property<int>("ObiektId")
@@ -59,6 +74,7 @@ namespace Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Nazwa")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("OstatniaAktualizacja")
@@ -71,6 +87,7 @@ namespace Core.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Symbol")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("UserId")
@@ -107,6 +124,7 @@ namespace Core.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Wartosc")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("ParametrId");
@@ -157,7 +175,6 @@ namespace Core.Migrations
             modelBuilder.Entity("Core.Models.User", b =>
                 {
                     b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Email")
@@ -179,6 +196,21 @@ namespace Core.Migrations
                     b.HasOne("Core.Models.User", null)
                         .WithMany("GrupyObiektow")
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("Core.Models.GrupaObiektowTypParametrow", b =>
+                {
+                    b.HasOne("Core.Models.GrupaObiektow", "GrupaObiektow")
+                        .WithMany("GrupaObiektowTypParametrow")
+                        .HasForeignKey("GrupaObiektowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Models.TypParametrow", "TypParametrow")
+                        .WithMany()
+                        .HasForeignKey("TypParametrowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Core.Models.Obiekt", b =>

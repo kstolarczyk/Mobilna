@@ -5,32 +5,6 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-     <Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:id="@+id/toolbar2"  
-        android:background="@android:color/holo_blue_dark"
-        android:minHeight="?attr/actionBarSize">
-          <RelativeLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:src="@drawable/ic_arrow_back_black_24dp"
-                android:contentDescription="@string/toolbar_arrow_desc"
-                android:layout_width="40dp"           
-                android:layout_height="40dp"
-                android:background="@android:color/holo_blue_dark"
-                app:MvxBind="Click BackArrowCommand" />
-            <TextView
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" 
-                android:text="@string/title_szczegoly"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="40dp" />
-          </RelativeLayout>
-      </Toolbar>
   <androidx.cardview.widget.CardView
     android:minWidth="25px"
     android:minHeight="25px"

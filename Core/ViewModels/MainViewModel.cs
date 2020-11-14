@@ -64,7 +64,7 @@ namespace Core.ViewModels
 
         private async Task Reload()
         {
-            GrupyObiektow.Clear();
+            GrupyObiektow.Clear();  
             await Initialize();
             _grupySyncDoneInteraction.Raise(GrupyObiektow);
         }

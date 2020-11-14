@@ -10,6 +10,7 @@ using Google.Android.Material.TextField;
 namespace Mobilna.Views
 {
     [Register("mobilna.custom.datepicker")]
+    [Preserve(AllMembers = true)]
     public class DatePickerView : TextInputEditText
     {
         protected void SetupControl()

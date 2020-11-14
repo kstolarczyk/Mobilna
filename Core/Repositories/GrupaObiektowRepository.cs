@@ -27,7 +27,8 @@ namespace Core.Repositories
         }
         public async Task<List<GrupaObiektow>> GetAllAsync()
         {
-             return await _context.GrupyObiektow.Include(t => t.TypyParametrow).AsNoTracking().ToListAsync().ConfigureAwait(false);
+             return await _context.GrupyObiektow.Include(g => g.GrupaObiektowTypParametrow)
+                 .ThenInclude(gt => gt.TypParametrow).ToListAsync().ConfigureAwait(false);
         }
         public async Task<GrupaObiektow> GetOneAsync(int id)
         {
@@ -35,7 +36,8 @@ namespace Core.Repositories
         }
         public IAsyncEnumerable<GrupaObiektow> GetAsStream()
         {
-            return _context.GrupyObiektow.Include(t => t.TypyParametrow).AsNoTracking().AsAsyncEnumerable();
+            return _context.GrupyObiektow.Include(g => g.GrupaObiektowTypParametrow)
+                .ThenInclude(gt => gt.TypParametrow).AsAsyncEnumerable();
         }
 
         public GrupaObiektow GetOne(int id)

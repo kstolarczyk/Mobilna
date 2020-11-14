@@ -11,6 +11,7 @@ using MvvmCross.Platforms.Android.Binding.Views;
 namespace Mobilna.Views
 {
     [Register("mobilna.custom.comboview")]
+    [Preserve(AllMembers = true)]
     public class ComboView : MvxAutoCompleteTextView
     {
         public ComboView(Context context, IAttributeSet attrs) : base(context, attrs)
