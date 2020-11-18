@@ -49,10 +49,9 @@ namespace Core.Repositories
 
         public IAsyncEnumerable<Obiekt> GetAsStream(int grupaId)
         {
-            return _context.Obiekty
+            return _context.Obiekty.Include(o => o.User)
                 .Where(o => o.Status != 3 && o.GrupaObiektowId == grupaId).AsNoTracking().AsAsyncEnumerable();
         }
-
         public async Task<Obiekt> GetOneAsync(int obiektId)
         {
             return await _context.Obiekty.Include(o => o.User)

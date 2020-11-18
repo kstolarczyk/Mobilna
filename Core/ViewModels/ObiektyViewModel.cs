@@ -63,14 +63,18 @@ namespace Core.ViewModels
 
         public Task ContextMenu(Obiekt obiekt)
         {
+            var options = new List<ActionSheetOption>()
+            {
+                new ActionSheetOption("Szczegóły", async () => await OnSzczegoly(obiekt))
+            };
+            if (obiekt.User != null)
+            {
+                options.Add(new ActionSheetOption("Edytuj", async () => await OnEdytuj(obiekt)));
+                options.Add(new ActionSheetOption("Usuń", async () => await OnUsun(obiekt)));
+            }
             _userDialogs.ActionSheet(new ActionSheetConfig()
             {
-              Options  = new List<ActionSheetOption>()
-              {
-                  new ActionSheetOption("Szczegóły", async () => await OnSzczegoly(obiekt)),
-                  new ActionSheetOption("Edytuj", async () => await OnEdytuj(obiekt)),
-                  new ActionSheetOption("Usuń", async () => await OnUsun(obiekt))
-              }
+              Options  = options
             });
             return Task.CompletedTask;
         }
