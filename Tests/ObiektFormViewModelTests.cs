@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Intrinsics.X86;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Acr.UserDialogs;
@@ -27,6 +29,7 @@ namespace Tests
         private Mock<ILocationService> _locationServiceMock;
         private Mock<IPictureService> _pictureServiceMock;
         private Mock<IMvxNavigationService> _navigationServiceMock;
+        private Mock<IObiektRepository> _mockRepo;
 
 
         [Test]
@@ -36,8 +39,21 @@ namespace Tests
             ViewModel.Prepare(obiekt?.ObiektId);
             await ViewModel.Initialize();
             Assert.NotNull(ViewModel.Obiekt);
+            Assert.NotNull(ViewModel.SelectedGrupa);
+            Assert.True(ViewModel.GrupyObiektow.Count > 0);
             Assert.True(ViewModel.Parametry.Count == (obiekt?.Parametry.Count ?? 0));
             Assert.AreEqual(obiekt, ViewModel.Obiekt);
+        }
+
+        [Test]
+        public async Task ShouldSelectGrupyLoadParameters()
+        {
+            var grupa = MockGrupyObiektow.First();
+            await ViewModel.Initialize();
+            Assert.True(ViewModel.Parametry.Count == 0);
+            ViewModel.SelectedGrupa = ViewModel.GrupyObiektow.First(g => g.GrupaObiektowId == grupa.GrupaObiektowId);
+            Assert.AreEqual(grupa, ViewModel.SelectedGrupa);
+            Assert.True(ViewModel.Parametry.Count == grupa.TypyParametrow.Count);
         }
 
         [Test]
@@ -47,18 +63,26 @@ namespace Tests
             _userDialogsMock.Verify(u => u.ActionSheet(It.IsAny<ActionSheetConfig>()), Times.Once);
         }
 
+        
         [Test]
-        public async Task ShouldShowPickLocationDialog()
+        public async Task ShouldTakePictureFromService()
         {
-            await ViewModel.GetCoordsCommand.ExecuteAsync();
-            _userDialogsMock.Verify(u => u.ActionSheet(It.IsAny<ActionSheetConfig>()), Times.Once);
+            await ViewModel.TakePhoto();
+
+            _pictureServiceMock.Verify(p => p.TakePictureAsync(), Times.Once);
+            Assert.True(ViewModel.ImageBytes.Length == 4);
+            Assert.True(ViewModel.ImageBytes[0] == 10);
         }
 
         [Test]
-        public void ShouldCallGetLocationFromService()
+        public async Task ShouldGetLocationFromService()
         {
+            await ViewModel.Initialize();
             ViewModel.GetCurrentLocation();
+
             _locationServiceMock.Verify(l => l.GetLocation(), Times.Once);
+            Assert.True(ViewModel.Obiekt.Latitude == 24.0m);
+            Assert.True(ViewModel.Obiekt.Longitude == 24.0m);
         }
 
         [Test]
@@ -72,19 +96,29 @@ namespace Tests
         }
 
         [Test]
-        public async Task ShouldCallTakePictureFromService()
+        public async Task ShouldSaveObiektWithImage()
         {
+            ViewModel.Prepare(1);
+            await ViewModel.Initialize();
             await ViewModel.TakePhoto();
-            _pictureServiceMock.Verify(p => p.TakePictureAsync(), Times.Once);
+            await ViewModel.SaveCommand.ExecuteAsync();
+
+            Assert.NotNull(ViewModel.Obiekt.ZdjecieLokal);
+            Assert.True(File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ViewModel.Obiekt.ZdjecieLokal)));
+
+            Assert.False(ViewModel.Obiekt.HasErrors);
+            _mockRepo.Verify(m => m.UpdateInstantlyAsync(It.IsAny<Obiekt>()), Times.Once);
         }
 
         [Test]
-        public async Task ShouldCallChoosePictureFromService()
+        public async Task ShouldNotSaveObiektWithErrors()
         {
-            await ViewModel.PickImage();
-            _pictureServiceMock.Verify(p => p.ChoosePictureAsync(), Times.Once);
-        }
+            await ViewModel.Initialize();
+            await ViewModel.SaveCommand.ExecuteAsync();
 
+            Assert.True(ViewModel.Obiekt.HasErrors);
+            _mockRepo.Verify(m => m.InsertInstantlyAsync(It.IsAny<Obiekt>()), Times.Never);
+        }
 
         protected MockDispatcher MockDispatcher {
             get;
@@ -102,6 +136,10 @@ namespace Tests
             _userDialogsMock = new Mock<IUserDialogs>(); 
             _locationServiceMock = new Mock<ILocationService>();
             _pictureServiceMock = new Mock<IPictureService>();
+            _locationServiceMock.Setup(l => l.GetLocation()).ReturnsAsync((24.0, 24.0));
+            _pictureServiceMock.Setup(p => p.ChoosePictureAsync()).ReturnsAsync(new byte[] {1, 2, 3, 4});
+            _pictureServiceMock.Setup(p => p.TakePictureAsync()).ReturnsAsync(new byte[] {10, 20, 30, 40});
+
             Ioc.RegisterSingleton(_userDialogsMock.Object);
             Ioc.RegisterSingleton(_locationServiceMock.Object);
             Ioc.RegisterSingleton(_pictureServiceMock.Object);
@@ -112,8 +150,8 @@ namespace Tests
 
         private void SetupRepository()
         {
-            var mockRepo = new Mock<IObiektRepository>();
-            mockRepo.Setup(o => o.GetOrCreateAsync(It.IsAny<int?>())).Returns<int?>(i =>
+            _mockRepo = new Mock<IObiektRepository>();
+            _mockRepo.Setup(o => o.GetOrCreateAsync(It.IsAny<int?>())).Returns<int?>(i =>
             {
                 if (i == null) return Task.FromResult(new Obiekt());
                 var obiekt = MockObiekty.FirstOrDefault(o => o.ObiektId == i);
@@ -122,14 +160,14 @@ namespace Tests
                     MockGrupyObiektow.FirstOrDefault(g => g.GrupaObiektowId == obiekt.GrupaObiektowId);
                 return Task.FromResult(obiekt);
             });
-            mockRepo.Setup(o => o.GetGrupyAsync()).Returns(() =>
+            _mockRepo.Setup(o => o.GetGrupyAsync()).Returns(() =>
             {
                 var typy = MockTypyParametrow;
                 var grupy = MockGrupyObiektow;
                 grupy.ForEach(g => g.TypyParametrow = typy.Where(t => g.GrupaObiektowTypParametrow.Any(gt => gt.TypParametrowId == t.TypParametrowId)).ToList());
                 return Task.FromResult(grupy);
             });
-            Ioc.RegisterSingleton(mockRepo.Object);
+            Ioc.RegisterSingleton(_mockRepo.Object);
         }
 
         protected override void AdditionalSetup()

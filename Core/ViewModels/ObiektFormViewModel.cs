@@ -142,7 +142,7 @@ namespace Core.ViewModels
         {
             if (_imageBytes == null) return Obiekt.ZdjecieLokal;
             var localFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            var algorithm = HashAlgorithm.Create();
+            var algorithm = HashAlgorithm.Create("sha256");
             var hashBytes = algorithm.ComputeHash(_imageBytes);
             var localName = hashBytes.Aggregate(new StringBuilder(), (builder, hb) => builder.Append(hb.ToString("X"))).ToString();
             var fileName = $"{localName}.jpg";
