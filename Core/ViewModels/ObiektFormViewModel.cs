@@ -84,18 +84,18 @@ namespace Core.ViewModels
             return Task.CompletedTask;
         }
 
-        private async Task TakePhoto()
+        public async Task TakePhoto()
         {
             ImageBytes = await _pictureService.TakePictureAsync();
         }
 
-        private async void SetPointOnMap()
+        public async void SetPointOnMap()
         {
             await _navigationService.Navigate<SetLocationMapViewModel, Obiekt, Obiekt>(Obiekt);
             await Obiekt.RaiseAllPropertiesChanged();
         }
 
-        private async void GetCurrentLocation()
+        public async void GetCurrentLocation()
         {
             IsGettingCoords = true;
             try
@@ -112,7 +112,7 @@ namespace Core.ViewModels
         }
 
 
-        private async Task PickImage()
+        public async Task PickImage()
         {
             ImageBytes = await _pictureService.ChoosePictureAsync();
         }
